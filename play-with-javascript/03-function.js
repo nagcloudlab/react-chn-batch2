@@ -179,7 +179,7 @@ greeting(timeBasedGreeting)
 // learnFunc()
 
 
-// Exercise
+// Exercise ( HOF - Higher Order Function )
 //------------------------------------------------
 function hello() {
     console.log("Hello")
@@ -234,7 +234,6 @@ function teach(sub) {
     return learn;
 }
 
-
 let learnFunc = teach("javascript")
 learnFunc()
 learnFunc()
@@ -262,22 +261,24 @@ function getCount() {
 //     getCount: getCount
 // }
 
-// export { increment, getCount }
-
 // })()
 
 
-// Exercise
+// Exercise. ( Closure )
 //------------------------------------------------
-
 
 var myFunctions = []
 
-for (var i = 0; i < 5; i++) {
+// HOF
+function getF(i) {
     var f = function () {
         console.log(i)
     }
-    myFunctions.push(f)
+    return f;
+}
+
+for (var i = 0; i < 5; i++) {
+    myFunctions.push(getF(i))
 }
 
 
