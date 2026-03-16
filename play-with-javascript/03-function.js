@@ -3,13 +3,12 @@
 /*
 
  - function is an object
- - we can create function 3 ways
+ - in javascript we can create function 2 ways
 
  1. function declaration
  2. function expression
 
 */
-
 
 
 // function declaration
@@ -39,7 +38,6 @@ let subtract = function (a, b) {
 console.log(subtract(5, 2)); // 3
 
 
-//------------------------------------------------
 // Function arguments
 // -----------------------------------------------
 
@@ -70,6 +68,7 @@ sum(1, 2, 3, 4); // 10
 
 
 // can we overload function in JavaScript? No
+// -----------------------------------------------
 function getFood(payment) {
     if (arguments.length === 0)
         return "no food";
@@ -79,7 +78,7 @@ function getFood(payment) {
 console.log(getFood(100))
 
 // default parameter value
-
+// -----------------------------------------------
 function getTransactions(type = "credit") {
     return type + " transactions"
 }
@@ -87,8 +86,8 @@ function getTransactions(type = "credit") {
 getTransactions(); // credit transactions
 getTransactions("debit"); // debit transactions
 
-// rest parameter. aka variable arguments
-
+// rest parameter.
+// -----------------------------------------------
 function getTotal(a = 0, b = 0, ...numbers) {
     let total = a + b;
     for (let number of numbers) {
@@ -104,6 +103,7 @@ getTotal(1, 2, 3, 4); // 10
 
 
 // function return value
+// -----------------------------------------------
 
 function getSomething() {
     return "something";
@@ -112,7 +112,6 @@ function getSomething() {
 let r = getSomething();
 console.log(r)
 
-//------------------------------------------------------------------
 // function as first class citizen ( i.e object)
 //------------------------------------------------------------------
 
@@ -122,7 +121,7 @@ console.log(r)
 
 
 // #1 can be assigned to variable
-
+// -----------------------------------------------
 function greet() {
     console.log("Hello")
 }
@@ -132,6 +131,7 @@ sayHello(); // Hello
 
 
 // #2 can be passed as argument to function
+// -----------------------------------------------
 
 let numbers = [1, 3, 5, 7, 2, 4, 6, 8, 10];
 console.log(numbers)
@@ -150,7 +150,6 @@ function greeting(f) {
     console.log("🌸🌸🌸🌸🌸🌸🌸🌸")
 }
 
-
 greeting();
 
 function timeBasedGreeting() {
@@ -163,8 +162,8 @@ function timeBasedGreeting() {
 greeting(timeBasedGreeting)
 
 
-
 // #3 can be returned from function
+// -----------------------------------------------
 
 function teach() {
     console.log("teaching...")
@@ -179,7 +178,7 @@ let learnFunc = teach()
 learnFunc()
 learnFunc()
 
-///------------------------------------------------
+
 // Exercise
 //------------------------------------------------
 
@@ -187,27 +186,21 @@ function hello() {
     console.log("Hello")
     console.log("😀")
 }
-
-
-hello();
-
 function hi() {
     console.log("Hi")
     console.log("😀")
 }
-
-
-hi();
-
 function hey() {
     console.log("Hey")
     console.log("😀")
 }
-
+hello();
+hi();
 hey();
-
 
 // design issues
 //----------------------------
 // code tangling. ( tight coupling)
 // code scattering ( code duplication)
+
+// solution?
