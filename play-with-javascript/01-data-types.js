@@ -1,11 +1,9 @@
 "use strict";
 
 //1. string 
-
 var name1 = "John Doe";
 var name2 = 'John Doe';
 var name3 = `John Doe`;
-
 var a = 10;
 var b = 20;
 var string2 = `The sum of a and b is ${a + b}`;
@@ -13,8 +11,6 @@ var componentTemplate = `<div>
     <h1>${name1}</h1>
     <p>${string2}</p>
 </div>`;
-
-
 
 //2. number
 
@@ -59,7 +55,7 @@ var v;
 // }
 
 
-// Es6 class syntax
+// Es6 class syntax ( syntactic sugar over the above function constructor and prototype approach)
 class Person {
     constructor(name, age) {
         this.name = name;
