@@ -59,8 +59,15 @@ javascript language topics
 -> 'this' keyword
 -> data-structures - array,set,map
 -> es6 - new syntax
+
 -> async programming - promise , observable-streams
 -> code organization - es modules
 -> javascript packagae managers - npm, yarn , npx , pnpm
 -> module bundlers - webpack , .. vite
 ...
+
+-> what makes web-ui
+-> challenges in web-ui development
+-> how to overcome those challenges
+_> component based architecture libraries - react.js
+-> react's core concepts - jsx, virtual dom, state, props, lifecycle methods
