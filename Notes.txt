@@ -1,0 +1,66 @@
+
+
+-------------------------------------
+why javascript language?
+-------------------------------------
+
+-> to develop web-ui applications 
+-> to develop server-side applications using nodejs
+-> to develop mobile applications using react native
+-> to develop desktop applications using electron
+
+
+---------------------------------------
+javascript features
+---------------------------------------
+
+-> single threaded
+-> by default all IO operations are asynchronous ( non-blocking )
+-> dynamically typed language -> leads to type errors at runtime
+-> supports functional programming paradigm
+-> supports event-driven programming paradigm
+-> ...
+
+
+
+----------------------------------------
+how to run javascript code?
+------------------------------------------
+
+-> using javascript intepretor / engine
+
+    -> chrome -> v8 ( c++)
+    -> firefox -> spider monkey ( c++ )
+    -> edge -> chakra ( c++ )
+    -> safari -> javascript core ( c++ )
+
+    -> node.js -> v8 ( c++ )
+    -> jvm -> nashorn ( java )
+
+----------------------------------------
+javascript follows the ecmascript standard
+------------------------------------------
+
+- in 2015, ecmascript 6 ( es6 ) was released with many new features
+
+
+------------------------------------------
+Hello Npci program in javascript
+------------------------------------------
+
+
+------------------------------------------
+javascript language topics
+------------------------------------------
+
+-> data-types
+-> execution-context / scope
+-> functions
+-> 'this' keyword
+-> data-structures - array,set,map
+-> es6 - new syntax
+-> async programming - promise , observable-streams
+-> code organization - es modules
+-> javascript packagae managers - npm, yarn , npx , pnpm
+-> module bundlers - webpack , .. vite
+...
