@@ -165,42 +165,123 @@ greeting(timeBasedGreeting)
 // #3 can be returned from function
 // -----------------------------------------------
 
-function teach() {
-    console.log("teaching...")
-    let learn = function () {
-        console.log("learning...")
+// function teach() {
+//     console.log("teaching...")
+//     let learn = function () {
+//         console.log("learning...")
+//     }
+//     console.log("teaching ends")
+//     return learn;
+// }
+
+// let learnFunc = teach()
+// learnFunc()
+// learnFunc()
+
+
+// Exercise
+//------------------------------------------------
+function hello() {
+    console.log("Hello")
+}
+function hi() {
+    console.log("Hi")
+}
+function hey() {
+    console.log("Hey")
+}
+// hello();
+// hi();
+// hey();
+
+
+function withAuth(f) {
+    return function () {
+        console.log("👮‍♀️")
+        f();
     }
-    console.log("teaching ends")
+}
+function withEmoji(f) {
+    return function () {
+        f();
+        console.log("😀")
+    }
+}
+// hello();
+// let hello_with_auth = withAuth(hello)
+// hello_with_auth();
+// let hello_with_auth_with_emoji = withEmoji(hello_with_auth)
+// hello_with_auth_with_emoji();
+
+withEmoji(withAuth(hello))();
+
+
+
+// function closure
+//------------------------------------------------
+
+// A closure is a function that has access to the parent scope, 
+// after the parent function has closed.
+
+
+function teach(sub) {
+    console.log(`teaching ${sub}...`)
+    let notes = `${sub} notes`
+    function learn() {
+        console.log(`learning with ${notes}...`)
+    }
+    console.log(`teaching ends...`)
     return learn;
 }
 
-let learnFunc = teach()
+
+let learnFunc = teach("javascript")
 learnFunc()
 learnFunc()
+
+
+// why we need closure?
+// to protect data from outside world ( i.e data encapsulation)
+// to create private variables and functions
+// to create module ( i.e module pattern)
+// to create function factories ( i.e function that returns function)
+
+// e.g  counter module ( module pattern )
+
+// const couter = (function init() {
+
+let count = 0; // private variable
+function increment() {
+    count++;
+}
+function getCount() {
+    return count;
+}
+// return {
+//     increment: increment,
+//     getCount: getCount
+// }
+
+// export { increment, getCount }
+
+// })()
 
 
 // Exercise
 //------------------------------------------------
 
-function hello() {
-    console.log("Hello")
-    console.log("😀")
-}
-function hi() {
-    console.log("Hi")
-    console.log("😀")
-}
-function hey() {
-    console.log("Hey")
-    console.log("😀")
-}
-hello();
-hi();
-hey();
 
-// design issues
-//----------------------------
-// code tangling. ( tight coupling)
-// code scattering ( code duplication)
+var myFunctions = []
 
-// solution?
+for (var i = 0; i < 5; i++) {
+    var f = function () {
+        console.log(i)
+    }
+    myFunctions.push(f)
+}
+
+
+myFunctions[0]()
+myFunctions[4]()
+
+//-----------------------------------------------
