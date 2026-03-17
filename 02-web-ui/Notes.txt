@@ -1,0 +1,67 @@
+
+
+UI = data + style + interactivity
+Web UI = HTML + CSS + JavaScript
+
+---------------------------------------------
+
+why do we need javascript on HTML page?
+
+-> using browser provided APIs, javascript can bring magic to the HTML page
+
+browser APIs - w3c recommended APIs that are implemented by all modern browsers natively ( c++ code ) and, 
+abstracted as javascript objects and functions,
+
+e.g DOM,XHR/Fetch,WebSocket,Canvas,Audio/Video,WebStorage,Geolocation,Notification,WebWorker etc
+ref: https://developer.mozilla.org/en-US/docs/Web/API
+
+
+using DOM Api
+----------------
+-> create/retrieve/update/delete HTML elements
+-> add event listeners to HTML elements
+-> manipulate CSS styles of HTML elements
+
+using XHR/Fetch API
+---------------------
+-> communicate with the server without refreshing the page 
+
+
+complexities working with browser APIs directly in JavaScript
+---------------------------------------------
+-> browser compatibility issues
+-> memory leaks and performance issues ( most commonly with DOM manipulation )
+-> code re-usability 
+-> security issues ( XSS, CSRF etc )
+-> too much boilerplate code ( e.g. XHR/Fetch API )
+... and many more
+
+
+Legacy solution:
+---------------------------------------------
+-> using server side rendering ( e.g. JSP, ASP.NET, PHP etc ) to generate HTML pages on the server and send them to the client, with minimal or no JavaScript on the client side.
+
+
+Modern Solution: JavaScript libraries and frameworks
+------------------------------------------------
+
+-> Jquery
+
+mvc pattern based frameworks
+-----------------------------
+
+-> backbone.js
+-> knockout.js
+-> dojo
+-> ExtJS from sencha
+-> AngularJS from google
+...
+
+component based frameworks
+-----------------------------
+
+-> React from facebook
+-> Angular from google
+-> Vue.js from Evan You
+-> Svelte from Rich Harris
+...
