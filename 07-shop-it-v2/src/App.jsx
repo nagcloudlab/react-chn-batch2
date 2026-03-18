@@ -5,13 +5,20 @@ import ProductList from './components/ProductList'
 
 
 function App() {
+
+  const [cart, setCart] = useState([])
+
+  const handleBuy = (product) => {
+    setCart([...cart, product])
+  }
+
   return (
     <div className="container">
       <Navbar title="Shop IT" />
       <hr />
-      <span className="badge bg-danger">0</span> item(s) in cart
+      <span className="badge bg-danger">{cart.length}</span> item(s) in cart
       <hr />
-      <ProductList />
+      <ProductList onBuy={handleBuy} />
     </div>
   )
 
