@@ -33,6 +33,7 @@ function ProductList() {
 
     return (
         <div className="list-group">
+            <hr />
             {renderProducts()}
         </div>
     )

@@ -9,6 +9,8 @@ function App() {
     <div className="container">
       <Navbar title="Shop IT" />
       <hr />
+      <span className="badge bg-danger">0</span> item(s) in cart
+      <hr />
       <ProductList />
     </div>
   )

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import classNames from "classnames";
+import Review from "./Review";
 
 function Product({ product }) {
 
@@ -39,7 +40,17 @@ function Product({ product }) {
                     </ul>
                 )
             case 3:
-                return <div>No reviews yet.</div>
+                return (
+                    <div>
+                        {reviews.map(review => {
+                            return (
+                                <div key={review.id} className="mt-2">
+                                    <Review review={review} />
+                                </div>
+                            )
+                        })}
+                    </div>
+                )
             default:
                 return null
         }
