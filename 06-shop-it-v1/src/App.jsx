@@ -1,4 +1,4 @@
-
+import { useState } from 'react'
 
 
 function App() {
@@ -9,6 +9,31 @@ function App() {
     price: 100000.00,
     description: 'A high-performance laptop for all your computing needs.',
     imageUrl: 'images/Laptop.png'
+  }
+
+  const [currentTab, setCurrentTab] = useState(1)
+
+  const handleTabChange = (tab) => {
+    setCurrentTab(tab)
+  }
+
+  function renderTabPanel() {
+    switch (currentTab) {
+      case 1:
+        return <p>{product.description}</p>
+      case 2:
+        return (
+          <ul>
+            <li>spec-1</li>
+            <li>spec-2</li>
+            <li>spec-3</li>
+          </ul>
+        )
+      case 3:
+        return <div>No reviews yet.</div>
+      default:
+        return null
+    }
   }
 
   return (
@@ -27,21 +52,16 @@ function App() {
               <button className="btn btn-primary">Add to Cart</button>
               <ul className="mt-3 nav nav-tabs">
                 <li className="nav-item">
-                  <a className="nav-link" href="#">Description</a>
+                  <a onClick={() => handleTabChange(1)} className="nav-link active" href="#">Description</a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="#">Specification</a>
+                  <a onClick={() => handleTabChange(2)} className="nav-link" href="#">Specification</a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link " href="#">Reviews</a>
+                  <a onClick={() => handleTabChange(3)} className="nav-link " href="#">Reviews</a>
                 </li>
               </ul>
-
-              <div>{product.description}</div>
-              <div>Spec..</div>
-              <div>Reviews...</div>
-
-
+              {renderTabPanel()}
             </div>
           </div>
         </div>
@@ -49,6 +69,9 @@ function App() {
 
     </div>
   )
+
+
+
 }
 
 export default App
