@@ -5,34 +5,32 @@ function cartReducer(cart = [], action) {
     switch (type) {
         case "ADD_TO_CART":
             let { product } = action;
-            let index = cart.findIndex(p => p.id === product.id);
-            if (index === -1) {
-                cart.push({ ...product, qty: 1, total: product.price });
-            } else {
-                cart[index].qty++;
-                cart[index].total = cart[index].qty * cart[index].price;
-            }
-            return [...cart];
+            return cart.some((item) => item.id === product.id)
+                ? cart.map((item) =>
+                    item.id === product.id
+                        ? { ...item, qty: item.qty + 1, total: (item.qty + 1) * item.price }
+                        : item
+                )
+                : [...cart, { ...product, qty: 1, total: product.price }];
         case "REMOVE_FROM_CART":
             let { productId: id } = action;
-            cart = cart.filter(p => p.id !== id);
-            return [...cart];
+            return cart.filter(p => p.id !== id);
         case "INCREMENT_QTY":
             let { productId: incId } = action;
-            let incIndex = cart.findIndex(p => p.id === incId);
-            if (incIndex !== -1) {
-                cart[incIndex].qty++;
-                cart[incIndex].total = cart[incIndex].qty * cart[incIndex].price;
-            }
-            return [...cart];
+            return cart.map((item) =>
+                item.id === incId
+                    ? { ...item, qty: item.qty + 1, total: (item.qty + 1) * item.price }
+                    : item
+            );
         case "DECREMENT_QTY":
             let { productId: decId } = action;
-            let decIndex = cart.findIndex(p => p.id === decId);
-            if (decIndex !== -1 && cart[decIndex].qty > 1) {
-                cart[decIndex].qty--;
-                cart[decIndex].total = cart[decIndex].qty * cart[decIndex].price;
-            }
-            return [...cart];
+            return cart.map((item) => {
+                if (item.id !== decId || item.qty <= 1) {
+                    return item;
+                }
+                const qty = item.qty - 1;
+                return { ...item, qty, total: qty * item.price };
+            });
         case "CLEAR_CART":
             return [];
         default:

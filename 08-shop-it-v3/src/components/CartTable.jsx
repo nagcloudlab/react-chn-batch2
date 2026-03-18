@@ -4,6 +4,7 @@ import { useContext } from "react"
 import { CartContext } from "../contexts/CartContext"
 
 function CartTable() {
+
     const { cart, dispatch } = useContext(CartContext)
 
     if (cart.length === 0) {
