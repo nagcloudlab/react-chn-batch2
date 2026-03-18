@@ -13,8 +13,8 @@ function App() {
   return (
     <div className="container">
       <CartContext.Provider value={{
-        cart: cart,
-        dispatch: dispatch
+        cart,
+        dispatch
       }}>
         <Navbar title="Shop IT" />
         <CartTable />
