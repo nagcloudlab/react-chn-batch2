@@ -6,42 +6,81 @@ export default function Home() {
         A hands-on guide to every React hook you need to know.
       </p>
 
-      <div className="row mt-4">
-        <div className="col-md-6">
-          <div className="card mb-3">
-            <div className="card-body">
-              <h5 className="card-title">Built-in Hooks (11)</h5>
-              <p className="card-text">
-                Master the hooks that ship with React — from everyday state
-                management to advanced performance optimizations.
-              </p>
-              <ul className="mb-0">
-                <li><strong>State &amp; Effects</strong> — useState, useEffect, useReducer</li>
-                <li><strong>Refs &amp; DOM</strong> — useRef, useId, useLayoutEffect</li>
-                <li><strong>Performance</strong> — useMemo, useCallback</li>
-                <li><strong>Context</strong> — useContext</li>
-                <li><strong>Concurrent</strong> — useTransition, useDeferredValue</li>
-              </ul>
-            </div>
-          </div>
+      {/* ── Built-in Hooks Overview ── */}
+      <div className="card mb-4">
+        <div className="card-header fw-semibold">Built-in Hooks (11)</div>
+        <div className="card-body">
+          <p className="card-text">
+            Master the hooks that ship with React — from everyday state
+            management to advanced performance optimizations.
+          </p>
+          <table className="table table-sm table-bordered mb-0">
+            <thead className="table-light">
+              <tr>
+                <th style={{ width: '30%' }}>Category</th>
+                <th>Hooks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>State &amp; Lifecycle</strong></td>
+                <td><code>useState</code>, <code>useEffect</code>, <code>useReducer</code></td>
+              </tr>
+              <tr>
+                <td><strong>Refs &amp; DOM</strong></td>
+                <td><code>useRef</code>, <code>useId</code>, <code>useLayoutEffect</code></td>
+              </tr>
+              <tr>
+                <td><strong>Performance</strong></td>
+                <td><code>useMemo</code>, <code>useCallback</code></td>
+              </tr>
+              <tr>
+                <td><strong>Context</strong></td>
+                <td><code>useContext</code></td>
+              </tr>
+              <tr>
+                <td><strong>Concurrent</strong></td>
+                <td><code>useTransition</code>, <code>useDeferredValue</code></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        <div className="col-md-6">
-          <div className="card mb-3">
-            <div className="card-body">
-              <h5 className="card-title">Custom Hooks (8)</h5>
-              <p className="card-text">
-                Learn to extract reusable logic into your own hooks —
-                the most powerful pattern in React.
-              </p>
-              <ul className="mb-0">
-                <li><strong>Data</strong> — useFetch, useLocalStorage</li>
-                <li><strong>UI</strong> — useToggle, useClickOutside, useWindowSize</li>
-                <li><strong>Timing</strong> — useDebounce, usePrevious</li>
-                <li><strong>Browser</strong> — useOnlineStatus</li>
-              </ul>
-            </div>
-          </div>
+      {/* ── Custom Hooks Overview ── */}
+      <div className="card mb-4">
+        <div className="card-header fw-semibold">Custom Hooks (8)</div>
+        <div className="card-body">
+          <p className="card-text">
+            Learn to extract reusable logic into your own hooks —
+            the most powerful pattern in React.
+          </p>
+          <table className="table table-sm table-bordered mb-0">
+            <thead className="table-light">
+              <tr>
+                <th style={{ width: '30%' }}>Category</th>
+                <th>Hooks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Data</strong></td>
+                <td><code>useFetch</code>, <code>useLocalStorage</code></td>
+              </tr>
+              <tr>
+                <td><strong>UI</strong></td>
+                <td><code>useToggle</code>, <code>useClickOutside</code>, <code>useWindowSize</code></td>
+              </tr>
+              <tr>
+                <td><strong>Timing</strong></td>
+                <td><code>useDebounce</code>, <code>usePrevious</code></td>
+              </tr>
+              <tr>
+                <td><strong>Browser</strong></td>
+                <td><code>useOnlineStatus</code></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 

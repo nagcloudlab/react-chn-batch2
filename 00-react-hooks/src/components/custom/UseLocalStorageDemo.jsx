@@ -1,45 +1,30 @@
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useLocalStorage } from "../../hooks/useLocalStorage"
 
-function UseLocalStorageDemo() {
-  const [note, setNote] = useLocalStorage("stickyNote", "");
-
-  const handleClear = () => {
-    setNote("");
-  };
+export default function UseLocalStorageDemo() {
+  const [note, setNote] = useLocalStorage("stickyNote", "")
 
   return (
-    <div className="container mt-4">
-      <h2>useLocalStorage - Custom Hook</h2>
+    <div>
+      <h2>useLocalStorage</h2>
+      <p className="lead">
+        A drop-in replacement for <code>useState</code> that persists
+        the value to <code>localStorage</code>.
+      </p>
 
-      <ul>
-        <li>
-          Works exactly like <code>useState</code> but{" "}
-          <strong>persists to localStorage</strong>
-        </li>
-        <li>
-          Reads the saved value on initialization using{" "}
-          <code>JSON.parse</code>
-        </li>
-        <li>
-          Writes updates to localStorage automatically using{" "}
-          <code>JSON.stringify</code>
-        </li>
-        <li>
-          Supports <strong>lazy initialization</strong> to avoid reading
-          localStorage on every render
-        </li>
-        <li>
-          Gracefully handles errors (e.g., corrupted data, storage quota
-          exceeded)
-        </li>
+      {/* Bullet-point explanation */}
+      <ul className="mb-4">
+        <li>Works exactly like <code>useState</code> but <strong>persists to localStorage</strong>.</li>
+        <li>Reads the saved value on initialization using <code>JSON.parse</code> (lazy initializer).</li>
+        <li>Writes updates to localStorage automatically using <code>JSON.stringify</code>.</li>
+        <li>Supports <strong>functional updates</strong>: <code>setValue(prev =&gt; prev + 1)</code>.</li>
+        <li>Gracefully handles errors (e.g., corrupted data, storage quota exceeded).</li>
       </ul>
 
-      <hr />
-
-      <div className="card">
-        <div className="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
-          <strong>Sticky Note</strong>
-          <button className="btn btn-sm btn-outline-dark" onClick={handleClear}>
+      {/* Demo — Sticky Note */}
+      <div className="card mb-4">
+        <div className="card-header bg-warning text-dark fw-semibold d-flex justify-content-between align-items-center">
+          <span>Demo — Sticky Note</span>
+          <button className="btn btn-sm btn-outline-dark" onClick={() => setNote("")}>
             Clear
           </button>
         </div>
@@ -49,37 +34,34 @@ function UseLocalStorageDemo() {
             rows="5"
             placeholder="Type your note here... It will persist even after page refresh!"
             value={note}
-            onChange={(e) => setNote(e.target.value)}
+            onChange={e => setNote(e.target.value)}
           />
           <small className="text-muted mt-2 d-block">
-            Try typing something, then refresh the page. Your note will still be
-            here!
+            Try typing something, then refresh the page. Your note will still be here!
           </small>
         </div>
-        <div className="card-footer text-muted">
-          localStorage key: <code>"stickyNote"</code> | Length:{" "}
-          {note.length} characters
+        <div className="card-footer text-muted small">
+          localStorage key: <code>"stickyNote"</code> | Length: {note.length} characters
         </div>
       </div>
 
-      <div className="code-snippet mt-4">
-        <pre>
-          <code>{`const [note, setNote] = useLocalStorage("stickyNote", "");
+      {/* Code hint */}
+      <h5>Code Hint</h5>
+      <code className="snippet">{
+`const [note, setNote] = useLocalStorage("stickyNote", "")
 
 // Inside useLocalStorage:
 const [storedValue, setStoredValue] = useState(() => {
-  const item = localStorage.getItem(key);
-  return item !== null ? JSON.parse(item) : initialValue;
-});
+  const item = localStorage.getItem(key)
+  return item !== null ? JSON.parse(item) : initialValue
+})
 
 const setValue = (value) => {
-  setStoredValue(value);
-  localStorage.setItem(key, JSON.stringify(value));
-};`}</code>
-        </pre>
-      </div>
+  const v = value instanceof Function ? value(storedValue) : value
+  setStoredValue(v)
+  localStorage.setItem(key, JSON.stringify(v))
+}`
+      }</code>
     </div>
-  );
+  )
 }
-
-export default UseLocalStorageDemo;

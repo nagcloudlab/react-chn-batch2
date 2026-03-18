@@ -25,6 +25,16 @@
   letter-spacing: 0.05em;
 }
 
+.sidebar-category {
+  padding: 0.3rem 1rem;
+  margin-top: 0.35rem;
+  color: #6c757d;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .sidebar .nav-link {
   padding: 0.4rem 1rem;
   color: #212529;

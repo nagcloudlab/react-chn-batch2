@@ -4,6 +4,20 @@ import classNames from "classnames";
 function Product({ product }) {
 
     const [currentTab, setCurrentTab] = useState(1)
+    const [reviews, setReviews] = useState([
+        {
+            id: 1,
+            reviewer: 'Nag',
+            comment: 'Good product',
+            rating: 4
+        },
+        {
+            id: 2,
+            reviewer: 'Ria',
+            comment: 'Worth the price',
+            rating: 5
+        }
+    ])
 
     const handleTabChange = (tab) => {
         setCurrentTab(tab)
