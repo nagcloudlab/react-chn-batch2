@@ -2,7 +2,7 @@ import { useState } from "react";
 import classNames from "classnames";
 import Review from "./Review";
 
-function Product({ product, onBuy }) {
+function Product({ product, onBuy, cart }) {
 
     const [currentTab, setCurrentTab] = useState(1)
     const [reviews, setReviews] = useState([
@@ -20,13 +20,15 @@ function Product({ product, onBuy }) {
         }
     ])
 
+    const isInCart = cart.find(item => item.id === product.id) !== undefined
+    const cartLineQty = isInCart ? cart.find(item => item.id === product.id).qty : 0
+
     const handleTabChange = (tab) => {
         setCurrentTab(tab)
     }
     const isTabSelected = (tab) => {
         return currentTab === tab;
     }
-
     function renderTabPanel(product) {
         switch (currentTab) {
             case 1:
@@ -73,7 +75,8 @@ function Product({ product, onBuy }) {
                 <div className="col-8">
                     <div>{product.name}</div>
                     <div>&#8377;{product.price}</div>
-                    <button className="btn btn-primary" onClick={() => handleBuy()}>Add to Cart</button>
+                    <button disabled={isInCart} className="btn btn-primary" onClick={() => handleBuy()}>Add to Cart</button>
+                    {isInCart && <div>Quantity in cart: {cartLineQty}</div>}
                     <ul className="mt-3 nav nav-tabs">
                         <li className="nav-item">
                             <a onClick={() => handleTabChange(1)} className={classNames({ 'nav-link': true, 'active': isTabSelected(1) })} href="#">Description</a>

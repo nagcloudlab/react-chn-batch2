@@ -1,7 +1,7 @@
 
 import Product from "./Product";
 
-function ProductList({ onBuy }) {
+function ProductList({ onBuy, cart }) {
 
     const products = [
         {
@@ -20,12 +20,11 @@ function ProductList({ onBuy }) {
         }
     ]
 
-
     function renderProducts() {
         return products.map(product => {
             return (
                 <div key={product.id} className="list-group-item">
-                    <Product product={product} onBuy={onBuy} />
+                    <Product product={product} onBuy={onBuy} cart={cart} />
                 </div>
             )
         })
