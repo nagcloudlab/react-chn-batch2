@@ -8,6 +8,9 @@ import TodosContext from "./contexts/TodosContext";
 
 function App() {
   const [todos, dispatch] = useReducer(todosReducer, []);
+  const handleToggleAllChange = (e) => {
+    dispatch({ type: 'TOGGLE_ALL' });
+  }
   return (
     <TodosContext.Provider value={{ todos, dispatch }}>
       <section className="todoapp">
@@ -16,7 +19,7 @@ function App() {
           <TodoInput />
         </header>
         <main className="main">
-          <div className="toggle-all-container">
+          <div className="toggle-all-container" onClick={handleToggleAllChange}>
             <input className="toggle-all" type="checkbox" />
             <label className="toggle-all-label" htmlFor="toggle-all">Mark all as complete</label>
           </div>

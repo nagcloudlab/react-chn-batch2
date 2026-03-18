@@ -2,6 +2,7 @@
 
 function todosReducer(todos = [], action) {
     const { type } = action;
+    console.log('todosReducer called with action', action);
     switch (type) {
         case 'ADD_TODO': {
             const { title } = action;
@@ -38,8 +39,8 @@ function todosReducer(todos = [], action) {
             })
         }
         case 'TOGGLE_ALL': {
-            const { completed } = action;
-            return todos.map(todo => ({ ...todo, completed }));
+            const areAllCompleted = todos.every(todo => todo.completed);
+            return todos.map(todo => ({ ...todo, completed: !areAllCompleted }));
         }
         default:
             return todos;
