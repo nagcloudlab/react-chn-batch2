@@ -7,12 +7,15 @@ import UseMemo from "./UseMemo";
 import UseCallback from "./UseCallback";
 import UseTransition from "./UseTransition";
 import UseCustomHook from "./CustomHook";
+import HOC from "./HOC";
+import Slot from "./Slot";
+import ContainerAndPresentational from "./ContainerAndPresentational";
+import Uncontrolled_Controlled from "./Uncontrolled_Controlled";
+import RenderProps from "./RederProps";
 
 
 function App() {
-
     // const [toggle, setToggle] = useState(false)
-
     return (
         <div className="container">
             <h1 className="text-primary">Hello, React!</h1>
@@ -26,7 +29,12 @@ function App() {
             {/* <UseMemo /> */}
             {/* <UseCallback /> */}
             {/* <UseTransition /> */}
-            <UseCustomHook />
+            {/* <UseCustomHook /> */}
+            {/* <HOC /> */}
+            {/* <Slot /> */}
+            {/* <ContainerAndPresentational /> */}
+            {/* <Uncontrolled_Controlled /> */}
+            <RenderProps />
         </div>
     )
 
