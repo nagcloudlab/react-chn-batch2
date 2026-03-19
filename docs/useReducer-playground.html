@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React useReducer Hook — Interactive Playground</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeecea;
+    --text: #1a1a18; --text2: #6b6a64; --text3: #9c9a92;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --info-bg: #e6f1fb; --info-text: #0c447c; --info-border: #185fa5;
+    --warn-bg: #faeeda; --warn-text: #633806; --warn-border: #854f0b;
+    --danger-bg: #fcebeb; --danger-text: #791f1f; --danger-border: #a32d2d;
+    --success-bg: #eaf3de; --success-text: #27500a; --success-border: #3b6d11;
+    --radius: 8px; --radius-lg: 12px;
+    --mono: 'Courier New', monospace;
+    --sans: system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1c; --bg2: #2a2a27; --bg3: #333330;
+      --text: #e8e6de; --text2: #a8a69e; --text3: #6e6c66;
+      --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
+      --info-bg: #0c2a44; --info-text: #85b7eb; --info-border: #378add;
+      --warn-bg: #412402; --warn-text: #fac775; --warn-border: #ba7517;
+      --danger-bg: #501313; --danger-text: #f09595; --danger-border: #e24b4a;
+      --success-bg: #173404; --success-text: #97c459; --success-border: #639922;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); padding: 2rem; max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 1.5rem; }
+
+  /* Flow diagram */
+  .flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; gap: 8px; background: var(--bg2); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; border: 0.5px solid var(--border); }
+  .flow-box { padding: 8px 16px; border-radius: var(--radius); border: 0.5px solid var(--border2); font-size: 13px; font-weight: 500; }
+  .flow-box.purple { background: #eeedfe; color: #3c3489; border-color: #534ab7; }
+  .flow-box.teal   { background: #e1f5ee; color: #085041; border-color: #0f6e56; }
+  .flow-box.amber  { background: #faeeda; color: #633806; border-color: #854f0b; }
+  @media (prefers-color-scheme: dark) {
+    .flow-box.purple { background: #26215c; color: #cecbf6; border-color: #7f77dd; }
+    .flow-box.teal   { background: #04342c; color: #9fe1cb; border-color: #1d9e75; }
+    .flow-box.amber  { background: #412402; color: #fac775; border-color: #ba7517; }
+  }
+  .flow-arrow { color: var(--text3); font-size: 16px; }
+  .flow-label { font-size: 11px; color: var(--text2); text-align: center; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab { padding: 6px 14px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: transparent; cursor: pointer; font-size: 13px; color: var(--text2); font-family: var(--sans); transition: all .15s; }
+  .tab.active { background: var(--bg2); color: var(--text); font-weight: 500; }
+  .panel { display: none; } .panel.active { display: block; }
+
+  /* Cards & layout */
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  .card-label { font-size: 12px; color: var(--text2); margin: 0 0 10px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; }
+  .two-col { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; margin-bottom: 12px; }
+  @media (max-width: 620px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* Buttons */
+  .btn { padding: 7px 16px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: transparent; cursor: pointer; font-size: 13px; color: var(--text); font-family: var(--sans); transition: all .15s; }
+  .btn:hover { background: var(--bg2); }
+  .btn:active { transform: scale(0.97); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+  /* Code */
+  .code-block { background: var(--bg2); border-radius: var(--radius); padding: 12px 14px; font-family: var(--mono); font-size: 12px; line-height: 1.7; margin-bottom: 1rem; border: 0.5px solid var(--border); overflow-x: auto; }
+  .hl  { color: var(--info-text); }
+  .hl2 { color: var(--warn-text); }
+  .hl3 { color: var(--success-text); }
+  .hl4 { color: var(--text2); }
+
+  /* Notes */
+  .note { font-size: 12px; color: var(--text2); margin-top: 8px; padding: 8px 12px; background: var(--bg2); border-left: 2px solid var(--info-border); }
+  .note.warn   { border-left-color: var(--warn-border); }
+  .note.danger { border-left-color: var(--danger-border); }
+
+  /* Logs */
+  .action-log { font-size: 12px; font-family: var(--mono); background: var(--bg2); border-radius: var(--radius); padding: 10px 12px; max-height: 160px; overflow-y: auto; }
+  .log-row { padding: 2px 0; display: flex; gap: 8px; align-items: baseline; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; white-space: nowrap; }
+  .badge.action { background: var(--info-bg); color: var(--info-text); }
+
+  /* Metrics */
+  .metrics-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+  .metric { background: var(--bg2); border-radius: var(--radius); padding: .75rem 1rem; text-align: center; }
+  .metric-val { font-size: 28px; font-weight: 500; margin: 0; }
+  .metric-lbl { font-size: 12px; color: var(--text2); margin: 2px 0 0; }
+
+  /* Cart */
+  .cart-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+  .cart-item:last-child { border-bottom: none; }
+  .qty-btn { width: 24px; height: 24px; border-radius: 4px; border: 0.5px solid var(--border2); background: transparent; cursor: pointer; font-size: 14px; color: var(--text); }
+  .qty-btn:hover { background: var(--bg2); }
+  .item-name { flex: 1; }
+  .item-price { font-family: var(--mono); font-size: 12px; color: var(--text2); min-width: 80px; text-align: right; }
+  .del-btn { padding: 2px 8px; border-radius: 4px; border: 0.5px solid var(--border); background: transparent; cursor: pointer; font-size: 11px; color: var(--text2); }
+  .del-btn:hover { color: var(--danger-text); border-color: var(--danger-border); }
+  .total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 4px; border-top: 0.5px solid var(--border2); }
+
+  /* Todo */
+  .toggle-form-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .input-field { padding: 7px 10px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 13px; flex: 1; }
+  .input-field:focus { outline: none; border-color: var(--text3); }
+  .todo-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+  .todo-item:last-child { border-bottom: none; }
+  .todo-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--info-text); }
+  .todo-text { flex: 1; }
+  .todo-text.done { text-decoration: line-through; color: var(--text2); }
+  .state-view { background: var(--bg2); border-radius: var(--radius); padding: 10px 12px; font-family: var(--mono); font-size: 12px; line-height: 1.7; border: 0.5px solid var(--border); }
+
+  /* vs section */
+  .vs-header { font-size: 13px; font-weight: 500; margin: 0 0 8px; padding: 6px 10px; border-radius: var(--radius); }
+  .vs-header.blue  { background: var(--info-bg); color: var(--info-text); }
+  .vs-header.amber { background: var(--warn-bg); color: var(--warn-text); }
+  .check-row { font-size: 12px; padding: 5px 0; display: flex; gap: 8px; border-bottom: 0.5px solid var(--border); color: var(--text2); }
+  .check-row:last-child { border-bottom: none; }
+  .ok { color: var(--success-text); }
+  .no { color: var(--danger-text); }
+</style>
+</head>
+<body>
+
+<h1>React useReducer Hook</h1>
+<p class="subtitle">Interactive playground — open in any browser, no setup needed</p>
+
+<!-- Data flow -->
+<div class="flow">
+  <div>
+    <div class="flow-box purple">Component</div>
+    <div class="flow-label">renders with state</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;">
+    <span class="flow-arrow">→</span>
+    <span style="font-size:10px;color:var(--text2)">dispatch({type})</span>
+  </div>
+  <div>
+    <div class="flow-box teal">Action</div>
+    <div class="flow-label">{ type, payload }</div>
+  </div>
+  <span class="flow-arrow">→</span>
+  <div>
+    <div class="flow-box amber">Reducer</div>
+    <div class="flow-label">(state, action) =&gt; newState</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;">
+    <span class="flow-arrow">→</span>
+    <span style="font-size:10px;color:var(--text2)">new state</span>
+  </div>
+  <div>
+    <div class="flow-box purple">Re-render</div>
+    <div class="flow-label">with new state</div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="sw('anatomy',this)">Anatomy</button>
+  <button class="tab" onclick="sw('cart',this)">Live demo</button>
+  <button class="tab" onclick="sw('todo',this)">Todo app</button>
+  <button class="tab" onclick="sw('vs',this)">vs useState</button>
+  <button class="tab" onclick="sw('pitfalls',this)">Pitfalls</button>
+</div>
+
+<!-- ANATOMY -->
+<div id="tab-anatomy" class="panel active">
+  <div class="code-block"><span class="hl4">// 1. Define the reducer — a pure function</span>
+<span class="hl">function</span> <span class="hl2">reducer</span>(state, action) {
+  <span class="hl">switch</span> (action.type) {
+    <span class="hl">case</span> <span class="hl3">'INCREMENT'</span>: <span class="hl">return</span> { count: state.count + <span class="hl3">1</span> };
+    <span class="hl">case</span> <span class="hl3">'DECREMENT'</span>: <span class="hl">return</span> { count: state.count - <span class="hl3">1</span> };
+    <span class="hl">case</span> <span class="hl3">'RESET'</span>:     <span class="hl">return</span> { count: <span class="hl3">0</span> };
+    <span class="hl">case</span> <span class="hl3">'ADD_TEN'</span>:   <span class="hl">return</span> { count: state.count + <span class="hl3">10</span> };
+    <span class="hl">default</span>:          <span class="hl">return</span> state;  <span class="hl4">// always return state for unknown actions</span>
+  }
+}
+
+<span class="hl4">// 2. Wire it up in your component</span>
+<span class="hl">const</span> [state, dispatch] = <span class="hl">useReducer</span>(reducer, { count: <span class="hl3">0</span> });
+<span class="hl4">//                                    ↑ reducer fn  ↑ initial state</span>
+
+<span class="hl4">// 3. Dispatch actions instead of calling setters</span>
+&lt;<span class="hl2">button</span> onClick={() =&gt; <span class="hl2">dispatch</span>({ type: <span class="hl3">'INCREMENT'</span> })}&gt;+&lt;/<span class="hl2">button</span>&gt;</div>
+
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label">Live counter — dispatch actions</p>
+      <div class="metrics-row">
+        <div class="metric"><p class="metric-val" id="anat-count">0</p><p class="metric-lbl">count</p></div>
+        <div class="metric"><p class="metric-val" id="anat-actions">0</p><p class="metric-lbl">actions dispatched</p></div>
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="btn" onclick="anatDispatch('DECREMENT')">– Decrement</button>
+        <button class="btn" onclick="anatDispatch('INCREMENT')">+ Increment</button>
+        <button class="btn" onclick="anatDispatch('RESET')">Reset</button>
+        <button class="btn" onclick="anatDispatch('ADD_TEN')">+10</button>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-label">Action log</p>
+      <div class="action-log" id="anat-log"></div>
+    </div>
+  </div>
+
+  <div class="code-block"><span class="hl4">// Actions can carry payload — extra data the reducer needs</span>
+<span class="hl">case</span> <span class="hl3">'SET'</span>: <span class="hl">return</span> { count: action.payload };
+
+<span class="hl2">dispatch</span>({ type: <span class="hl3">'SET'</span>, payload: <span class="hl3">42</span> });</div>
+
+  <div class="note">The reducer must be a <strong>pure function</strong> — same input always gives same output, no side effects inside it. Async calls, timers, and logging belong outside.</div>
+</div>
+
+<!-- LIVE CART DEMO -->
+<div id="tab-cart" class="panel">
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label">Shopping cart state</p>
+      <div id="cart-items"></div>
+      <div class="total-row">
+        <span style="font-size:13px;color:var(--text2)">Total</span>
+        <span style="font-size:16px;font-weight:500;font-family:var(--mono)" id="cart-total">₹0</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="cartDispatch({type:'ADD',payload:{id:1,name:'Spring Boot Course',price:1499}})">+ Add course</button>
+        <button class="btn" onclick="cartDispatch({type:'ADD',payload:{id:2,name:'React Bootcamp',price:999}})">+ Add bootcamp</button>
+        <button class="btn" onclick="cartDispatch({type:'CLEAR'})">Clear cart</button>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-label">Reducer action log</p>
+      <div class="action-log" id="cart-log"></div>
+      <div class="code-block" style="margin-top:10px;margin-bottom:0;font-size:11px;"><span class="hl">switch</span>(action.type) {
+  <span class="hl">case</span> <span class="hl3">'ADD'</span>:       <span class="hl4">// add or qty++</span>
+  <span class="hl">case</span> <span class="hl3">'REMOVE'</span>:    <span class="hl4">// delete item</span>
+  <span class="hl">case</span> <span class="hl3">'INCREMENT'</span>: <span class="hl4">// qty + 1</span>
+  <span class="hl">case</span> <span class="hl3">'DECREMENT'</span>: <span class="hl4">// qty - 1</span>
+  <span class="hl">case</span> <span class="hl3">'CLEAR'</span>:     <span class="hl4">// empty cart</span>
+}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-label">Full reducer for this cart</p>
+    <div class="code-block" style="margin-bottom:0;"><span class="hl">function</span> <span class="hl2">cartReducer</span>(state, action) {
+  <span class="hl">switch</span> (action.type) {
+    <span class="hl">case</span> <span class="hl3">'ADD'</span>: {
+      <span class="hl">const</span> exists = state.items.<span class="hl2">find</span>(i =&gt; i.id === action.payload.id);
+      <span class="hl">if</span> (exists) <span class="hl">return</span> { ...state,
+        items: state.items.<span class="hl2">map</span>(i =&gt; i.id === action.payload.id
+          ? { ...i, qty: i.qty + <span class="hl3">1</span> } : i) };
+      <span class="hl">return</span> { ...state,
+        items: [...state.items, { ...action.payload, qty: <span class="hl3">1</span> }] };
+    }
+    <span class="hl">case</span> <span class="hl3">'REMOVE'</span>:
+      <span class="hl">return</span> { ...state, items: state.items.<span class="hl2">filter</span>(i =&gt; i.id !== action.payload) };
+    <span class="hl">case</span> <span class="hl3">'INCREMENT'</span>:
+      <span class="hl">return</span> { ...state, items: state.items.<span class="hl2">map</span>(i =&gt;
+        i.id === action.payload ? { ...i, qty: i.qty + <span class="hl3">1</span> } : i) };
+    <span class="hl">case</span> <span class="hl3">'DECREMENT'</span>:
+      <span class="hl">return</span> { ...state, items: state.items.<span class="hl2">map</span>(i =&gt;
+        i.id === action.payload ? { ...i, qty: <span class="hl2">Math.max</span>(<span class="hl3">1</span>, i.qty-<span class="hl3">1</span>) } : i) };
+    <span class="hl">case</span> <span class="hl3">'CLEAR'</span>:  <span class="hl">return</span> { items: [] };
+    <span class="hl">default</span>:      <span class="hl">return</span> state;
+  }
+}</div>
+  </div>
+</div>
+
+<!-- TODO APP -->
+<div id="tab-todo" class="panel">
+  <div class="card">
+    <p class="card-label">Todo list — multi-field state in one reducer</p>
+    <div class="toggle-form-row">
+      <input class="input-field" id="todo-input" placeholder="Add a task..." onkeydown="if(event.key==='Enter')addTodo()">
+      <button class="btn" onclick="addTodo()">Add</button>
+    </div>
+    <div id="todo-list"></div>
+    <div class="total-row" style="margin-top:8px;">
+      <span style="font-size:12px;color:var(--text2)" id="todo-stats">0/0 done</span>
+      <button class="btn" style="font-size:12px;padding:4px 10px;" onclick="todoDispatch({type:'CLEAR_DONE'})">Clear done</button>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label">Current state snapshot</p>
+      <div class="state-view" id="todo-state-view"></div>
+    </div>
+    <div class="card">
+      <p class="card-label">Action log</p>
+      <div class="action-log" id="todo-log"></div>
+    </div>
+  </div>
+  <div class="code-block"><span class="hl4">// One reducer managing multiple related fields atomically</span>
+<span class="hl">const</span> initialState = { todos: [], nextId: <span class="hl3">1</span> };
+
+<span class="hl">function</span> <span class="hl2">todoReducer</span>(state, action) {
+  <span class="hl">switch</span>(action.type) {
+    <span class="hl">case</span> <span class="hl3">'ADD'</span>:
+      <span class="hl">return</span> { todos: [...state.todos,
+          { id: state.nextId, text: action.payload, done: <span class="hl3">false</span> }],
+        nextId: state.nextId + <span class="hl3">1</span> };  <span class="hl4">// both fields updated atomically</span>
+    <span class="hl">case</span> <span class="hl3">'TOGGLE'</span>:
+      <span class="hl">return</span> { ...state, todos: state.todos.<span class="hl2">map</span>(t =&gt;
+        t.id === action.payload ? { ...t, done: !t.done } : t) };
+    <span class="hl">case</span> <span class="hl3">'DELETE'</span>:
+      <span class="hl">return</span> { ...state, todos: state.todos.<span class="hl2">filter</span>(t =&gt; t.id !== action.payload) };
+    <span class="hl">case</span> <span class="hl3">'CLEAR_DONE'</span>:
+      <span class="hl">return</span> { ...state, todos: state.todos.<span class="hl2">filter</span>(t =&gt; !t.done) };
+    <span class="hl">default</span>: <span class="hl">return</span> state;
+  }
+}</div>
+</div>
+
+<!-- VS USESTATE -->
+<div id="tab-vs" class="panel">
+  <div class="two-col" style="margin-bottom:16px;">
+    <div>
+      <div class="vs-header blue">useState</div>
+      <div class="check-row"><span class="ok">✓</span> 1–2 independent values</div>
+      <div class="check-row"><span class="ok">✓</span> Simple on/off toggles</div>
+      <div class="check-row"><span class="ok">✓</span> Less boilerplate</div>
+      <div class="check-row"><span class="no">✗</span> Many related fields updating together</div>
+      <div class="check-row"><span class="no">✗</span> Complex next-state logic</div>
+      <div class="check-row"><span class="no">✗</span> Hard to test transitions in isolation</div>
+    </div>
+    <div>
+      <div class="vs-header amber">useReducer</div>
+      <div class="check-row"><span class="ok">✓</span> Multiple related state fields</div>
+      <div class="check-row"><span class="ok">✓</span> Complex transitions (cart, form, wizard)</div>
+      <div class="check-row"><span class="ok">✓</span> Reducer is pure — easy to unit test</div>
+      <div class="check-row"><span class="ok">✓</span> Actions are self-documenting</div>
+      <div class="check-row"><span class="no">✗</span> More boilerplate for simple cases</div>
+      <div class="check-row"><span class="no">✗</span> Overkill for a single counter</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label" style="color:var(--info-text)">useState approach — form reset</p>
+      <div class="code-block" style="margin-bottom:0;font-size:11px;"><span class="hl4">// 3 separate setters — 3 re-renders on reset</span>
+<span class="hl">const</span> [name,    setName]    = <span class="hl">useState</span>(<span class="hl3">''</span>);
+<span class="hl">const</span> [email,   setEmail]   = <span class="hl">useState</span>(<span class="hl3">''</span>);
+<span class="hl">const</span> [loading, setLoading] = <span class="hl">useState</span>(<span class="hl3">false</span>);
+
+<span class="hl">const</span> reset = () =&gt; {
+  <span class="hl2">setName</span>(<span class="hl3">''</span>);
+  <span class="hl2">setEmail</span>(<span class="hl3">''</span>);
+  <span class="hl2">setLoading</span>(<span class="hl3">false</span>);
+};</div>
+    </div>
+    <div class="card">
+      <p class="card-label" style="color:var(--warn-text)">useReducer approach — form reset</p>
+      <div class="code-block" style="margin-bottom:0;font-size:11px;"><span class="hl4">// 1 dispatch → 1 re-render, clearly named</span>
+<span class="hl">const</span> [state, dispatch] = <span class="hl">useReducer</span>(reducer, {
+  name: <span class="hl3">''</span>, email: <span class="hl3">''</span>, loading: <span class="hl3">false</span>
+});
+
+<span class="hl">const</span> reset = () =&gt;
+  <span class="hl2">dispatch</span>({ type: <span class="hl3">'RESET'</span> });
+
+<span class="hl4">// Reducer case:</span>
+<span class="hl">case</span> <span class="hl3">'RESET'</span>: <span class="hl">return</span> initialState;</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-label">The decision rule</p>
+    <div class="code-block" style="margin-bottom:0;"><span class="hl4">// Ask: would you naturally describe this as an "event"?</span>
+
+<span class="hl4">// ✅ Sounds like an event → useReducer</span>
+<span class="hl2">dispatch</span>({ type: <span class="hl3">'SUBMIT_ORDER'</span> });
+<span class="hl2">dispatch</span>({ type: <span class="hl3">'APPLY_COUPON'</span>, payload: code });
+<span class="hl2">dispatch</span>({ type: <span class="hl3">'MOVE_TO_STEP'</span>, payload: <span class="hl3">3</span> });
+
+<span class="hl4">// ✅ Simple value flip → useState is fine</span>
+<span class="hl2">setIsOpen</span>(!isOpen);
+<span class="hl2">setCount</span>(n =&gt; n + <span class="hl3">1</span>);</div>
+  </div>
+</div>
+
+<!-- PITFALLS -->
+<div id="tab-pitfalls" class="panel">
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 1 — mutating state in the reducer</p>
+    <div class="two-col">
+      <div class="code-block"><span class="hl4">// ❌ Mutation — no re-render</span>
+<span class="hl">case</span> <span class="hl3">'ADD'</span>:
+  state.items.<span class="hl2">push</span>(action.payload);
+  <span class="hl">return</span> state; <span class="hl4">// same reference!</span></div>
+      <div class="code-block"><span class="hl4">// ✅ Return a new object</span>
+<span class="hl">case</span> <span class="hl3">'ADD'</span>:
+  <span class="hl">return</span> { ...state,
+    items: [...state.items, action.payload] };</div>
+    </div>
+    <div class="note danger">The reducer must return a brand new object/array. React compares references — same object = no re-render.</div>
+  </div>
+
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 2 — side effects inside the reducer</p>
+    <div class="two-col">
+      <div class="code-block"><span class="hl4">// ❌ Side effects in reducer</span>
+<span class="hl">case</span> <span class="hl3">'SUBMIT'</span>:
+  <span class="hl2">fetch</span>(<span class="hl3">'/api/order'</span>, {...}); <span class="hl4">// NO</span>
+  localStorage.<span class="hl2">setItem</span>(...);  <span class="hl4">// NO</span>
+  <span class="hl">return</span> { ...state, submitted: <span class="hl3">true</span> };</div>
+      <div class="code-block"><span class="hl4">// ✅ Side effects in useEffect</span>
+<span class="hl">useEffect</span>(() =&gt; {
+  <span class="hl">if</span> (state.submitted) {
+    <span class="hl2">fetch</span>(<span class="hl3">'/api/order'</span>, {...});
+  }
+}, [state.submitted]);</div>
+    </div>
+    <div class="note danger">React Strict Mode calls reducers twice in development to enforce purity. Any side effect will run twice.</div>
+  </div>
+
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 3 — missing default case</p>
+    <div class="two-col">
+      <div class="code-block"><span class="hl4">// ❌ Returns undefined on unknown action</span>
+<span class="hl">function</span> <span class="hl2">reducer</span>(state, action) {
+  <span class="hl">switch</span>(action.type) {
+    <span class="hl">case</span> <span class="hl3">'A'</span>: <span class="hl">return</span> { ...state, a: <span class="hl3">1</span> };
+    <span class="hl4">// no default — crashes!</span>
+  }
+}</div>
+      <div class="code-block"><span class="hl4">// ✅ Always return state as fallback</span>
+<span class="hl">function</span> <span class="hl2">reducer</span>(state, action) {
+  <span class="hl">switch</span>(action.type) {
+    <span class="hl">case</span> <span class="hl3">'A'</span>: <span class="hl">return</span> { ...state, a: <span class="hl3">1</span> };
+    <span class="hl">default</span>: <span class="hl">return</span> state; <span class="hl4">// always!</span>
+  }
+}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 4 — reading state right after dispatch</p>
+    <div class="code-block"><span class="hl4">// ❌ state is still the old value right after dispatch</span>
+<span class="hl2">dispatch</span>({ type: <span class="hl3">'INCREMENT'</span> });
+console.<span class="hl2">log</span>(state.count);  <span class="hl4">// still the OLD count!</span>
+
+<span class="hl4">// ✅ Compute the next value yourself if you need it now</span>
+<span class="hl">const</span> nextCount = state.count + <span class="hl3">1</span>;
+<span class="hl2">dispatch</span>({ type: <span class="hl3">'SET'</span>, payload: nextCount });
+console.<span class="hl2">log</span>(nextCount);  <span class="hl4">// ✓</span></div>
+    <div class="note warn">dispatch queues an update — the component re-renders first, then you'll see the new state.</div>
+  </div>
+</div>
+
+<script>
+function sw(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+/* ---- ANATOMY ---- */
+let anatState = { count: 0 };
+let anatActionCount = 0;
+function anatReducer(state, action) {
+  switch(action.type) {
+    case 'INCREMENT': return { count: state.count + 1 };
+    case 'DECREMENT': return { count: state.count - 1 };
+    case 'RESET':     return { count: 0 };
+    case 'ADD_TEN':   return { count: state.count + 10 };
+    default:          return state;
+  }
+}
+function logEntry(logId, type, detail) {
+  const log = document.getElementById(logId);
+  const row = document.createElement('div');
+  row.className = 'log-row';
+  row.innerHTML = `<span class="badge action">${type}</span><span style="font-size:11px;color:var(--text2)">${detail}</span>`;
+  log.insertBefore(row, log.firstChild);
+  if (log.children.length > 12) log.lastChild.remove();
+}
+function anatDispatch(type) {
+  const before = anatState.count;
+  anatState = anatReducer(anatState, { type });
+  anatActionCount++;
+  document.getElementById('anat-count').textContent = anatState.count;
+  document.getElementById('anat-actions').textContent = anatActionCount;
+  logEntry('anat-log', type, `${before} → ${anatState.count}`);
+}
+logEntry('anat-log', 'INIT', '→ { count: 0 }');
+
+/* ---- CART ---- */
+let cartState = { items: [] };
+function cartReducer(state, action) {
+  switch(action.type) {
+    case 'ADD': {
+      const exists = state.items.find(i => i.id === action.payload.id);
+      if (exists) return { ...state, items: state.items.map(i => i.id === action.payload.id ? {...i, qty: i.qty + 1} : i) };
+      return { ...state, items: [...state.items, {...action.payload, qty: 1}] };
+    }
+    case 'REMOVE':    return { ...state, items: state.items.filter(i => i.id !== action.payload) };
+    case 'INCREMENT': return { ...state, items: state.items.map(i => i.id === action.payload ? {...i, qty: i.qty + 1} : i) };
+    case 'DECREMENT': return { ...state, items: state.items.map(i => i.id === action.payload ? {...i, qty: Math.max(1, i.qty - 1)} : i) };
+    case 'CLEAR':     return { items: [] };
+    default:          return state;
+  }
+}
+function cartDispatch(action) {
+  cartState = cartReducer(cartState, action);
+  renderCart();
+  const label = action.payload ? (typeof action.payload === 'object' ? action.payload.name : action.payload) : '';
+  logEntry('cart-log', action.type, label);
+}
+function renderCart() {
+  const c = document.getElementById('cart-items');
+  if (!cartState.items.length) {
+    c.innerHTML = '<div style="font-size:13px;color:var(--text2);padding:8px 0">Cart is empty</div>';
+  } else {
+    c.innerHTML = cartState.items.map(item => `
+      <div class="cart-item">
+        <span class="item-name">${item.name}</span>
+        <button class="qty-btn" onclick="cartDispatch({type:'DECREMENT',payload:${item.id}})">−</button>
+        <span style="font-size:13px;min-width:20px;text-align:center">${item.qty}</span>
+        <button class="qty-btn" onclick="cartDispatch({type:'INCREMENT',payload:${item.id}})">+</button>
+        <span class="item-price">₹${(item.price * item.qty).toLocaleString()}</span>
+        <button class="del-btn" onclick="cartDispatch({type:'REMOVE',payload:${item.id}})">del</button>
+      </div>`).join('');
+  }
+  const total = cartState.items.reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('cart-total').textContent = '₹' + total.toLocaleString();
+}
+renderCart();
+
+/* ---- TODO ---- */
+let todoState = { todos: [], nextId: 1 };
+function todoReducer(state, action) {
+  switch(action.type) {
+    case 'ADD':        return { todos: [...state.todos, {id: state.nextId, text: action.payload, done: false}], nextId: state.nextId + 1 };
+    case 'TOGGLE':     return { ...state, todos: state.todos.map(t => t.id === action.payload ? {...t, done: !t.done} : t) };
+    case 'DELETE':     return { ...state, todos: state.todos.filter(t => t.id !== action.payload) };
+    case 'CLEAR_DONE': return { ...state, todos: state.todos.filter(t => !t.done) };
+    default:           return state;
+  }
+}
+function todoDispatch(action) {
+  todoState = todoReducer(todoState, action);
+  renderTodo();
+  logEntry('todo-log', action.type, action.payload || '');
+}
+function addTodo() {
+  const inp = document.getElementById('todo-input');
+  if (inp.value.trim()) { todoDispatch({type:'ADD', payload: inp.value.trim()}); inp.value = ''; }
+}
+function renderTodo() {
+  const list = document.getElementById('todo-list');
+  list.innerHTML = todoState.todos.length
+    ? todoState.todos.map(t => `
+        <div class="todo-item">
+          <input type="checkbox" class="todo-check" ${t.done ? 'checked' : ''} onchange="todoDispatch({type:'TOGGLE',payload:${t.id}})">
+          <span class="todo-text${t.done ? ' done' : ''}">${t.text}</span>
+          <button class="del-btn" onclick="todoDispatch({type:'DELETE',payload:${t.id}})">del</button>
+        </div>`).join('')
+    : '<div style="font-size:13px;color:var(--text2);padding:8px 0">No tasks yet</div>';
+  const done = todoState.todos.filter(t => t.done).length;
+  document.getElementById('todo-stats').textContent = `${done}/${todoState.todos.length} done`;
+  document.getElementById('todo-state-view').innerHTML =
+    `<span style="color:var(--info-text)">todos</span>: [${todoState.todos.length} items]\n` +
+    `<span style="color:var(--info-text)">nextId</span>: ${todoState.nextId}\n` +
+    `<span style="color:var(--text2)">// ${todoState.todos.filter(t=>!t.done).length} pending, ${done} done</span>`;
+}
+renderTodo();
+</script>
+</body>
+</html>

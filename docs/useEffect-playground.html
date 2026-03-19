@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React useEffect Hook — Interactive Playground</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeecea;
+    --text: #1a1a18; --text2: #6b6a64; --text3: #9c9a92;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --blue-bg: #e6f1fb; --blue-text: #0c447c;
+    --green-bg: #eaf3de; --green-text: #27500a;
+    --amber-bg: #faeeda; --amber-text: #633806;
+    --red-bg: #fcebeb; --red-text: #791f1f;
+    --teal-bg: #e1f5ee; --teal-text: #085041;
+    --info-bg: #e6f1fb; --info-text: #0c447c;
+    --warn-bg: #faeeda; --warn-text: #633806;
+    --danger-bg: #fcebeb; --danger-text: #791f1f;
+    --success-bg: #eaf3de; --success-text: #27500a;
+    --radius: 8px; --radius-lg: 12px;
+    --mono: 'Courier New', monospace;
+    --sans: system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1c; --bg2: #2a2a27; --bg3: #333330;
+      --text: #e8e6de; --text2: #a8a69e; --text3: #6e6c66;
+      --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
+      --blue-bg: #0c2a44; --blue-text: #85b7eb;
+      --green-bg: #173404; --green-text: #97c459;
+      --amber-bg: #412402; --amber-text: #fac775;
+      --red-bg: #501313; --red-text: #f09595;
+      --teal-bg: #04342c; --teal-text: #5dcaa5;
+      --info-bg: #0c2a44; --info-text: #85b7eb;
+      --warn-bg: #412402; --warn-text: #fac775;
+      --danger-bg: #501313; --danger-text: #f09595;
+      --success-bg: #173404; --success-text: #97c459;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); padding: 2rem; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 2rem; }
+
+  .lifecycle-box { background: var(--bg2); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2rem; border: 0.5px solid var(--border); }
+  .lifecycle-title { font-size: 12px; color: var(--text2); font-weight: 500; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 1rem; }
+  .lifecycle-steps { display: flex; align-items: center; gap: 0; flex-wrap: wrap; gap: 8px; }
+  .step-box { padding: 8px 16px; border-radius: var(--radius); border: 0.5px solid var(--border2); font-size: 13px; font-weight: 500; }
+  .step-box.gray { background: var(--bg3); }
+  .step-box.teal { background: var(--teal-bg); color: var(--teal-text); border-color: var(--teal-text); }
+  .step-box.purple { background: var(--blue-bg); color: var(--blue-text); border-color: var(--blue-text); }
+  .arrow { color: var(--text3); font-size: 18px; }
+  .dep-pills { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+  .dep-pill { padding: 4px 14px; border-radius: 999px; font-size: 12px; font-family: var(--mono); }
+  .dep-pill.amber { background: var(--amber-bg); color: var(--amber-text); }
+  .dep-pill.blue  { background: var(--blue-bg); color: var(--blue-text); }
+  .dep-pill.green { background: var(--green-bg); color: var(--green-text); }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab { padding: 6px 14px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: transparent; cursor: pointer; font-size: 13px; color: var(--text2); font-family: var(--sans); transition: all .15s; }
+  .tab.active { background: var(--bg2); color: var(--text); font-weight: 500; }
+  .panel { display: none; } .panel.active { display: block; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1rem; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  .card-label { font-size: 12px; color: var(--text2); margin: 0 0 10px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; }
+  .btn { padding: 7px 16px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: transparent; cursor: pointer; font-size: 13px; color: var(--text); font-family: var(--sans); transition: all .15s; }
+  .btn:hover { background: var(--bg2); }
+  .btn:active { transform: scale(0.97); }
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .code-block { background: var(--bg2); border-radius: var(--radius); padding: 12px 14px; font-family: var(--mono); font-size: 12px; line-height: 1.7; margin-bottom: 1rem; border: 0.5px solid var(--border); overflow-x: auto; }
+  .hl  { color: var(--info-text); }
+  .hl2 { color: var(--warn-text); }
+  .hl3 { color: var(--success-text); }
+  .hl4 { color: var(--text2); }
+  .hl5 { color: var(--danger-text); }
+  .note { font-size: 12px; color: var(--text2); margin-top: 8px; padding: 8px 12px; background: var(--bg2); border-left: 2px solid var(--info-text); }
+  .note.warn { border-left-color: var(--warn-text); }
+  .note.danger { border-left-color: var(--danger-text); }
+  .log { font-size: 12px; font-family: var(--mono); background: var(--bg2); border-radius: var(--radius); padding: 10px 12px; max-height: 140px; overflow-y: auto; }
+  .log-entry { padding: 2px 0; color: var(--text2); display: flex; gap: 8px; align-items: baseline; }
+  .log-entry.effect { color: var(--success-text); }
+  .log-entry.cleanup { color: var(--warn-text); }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; }
+  .tag.effect { background: var(--success-bg); color: var(--success-text); }
+  .tag.cleanup { background: var(--warn-bg); color: var(--warn-text); }
+  .big-num { font-size: 36px; font-weight: 500; line-height: 1; margin: 0; }
+  .input-field { padding: 7px 10px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; width: 100%; }
+  .input-field:focus { outline: none; border-color: var(--text3); }
+  .section-label { font-size: 13px; font-weight: 500; margin: 0 0 8px; }
+  .status-box { font-size: 13px; padding: 8px 12px; border-radius: var(--radius); background: var(--bg2); font-family: var(--mono); margin: 8px 0; min-height: 36px; }
+  .mount-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 0.5px solid var(--border); margin-bottom: 12px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.green { background: #639922; }
+  .dot.gray { background: var(--text2); }
+</style>
+</head>
+<body>
+<h1>React useEffect Hook</h1>
+<p class="subtitle">Interactive playground — open in any browser, no setup needed</p>
+
+<div class="lifecycle-box">
+  <p class="lifecycle-title">Component lifecycle — where useEffect fits</p>
+  <div class="lifecycle-steps">
+    <div class="step-box gray">1. Render</div>
+    <span class="arrow">→</span>
+    <div class="step-box gray">2. Commit (DOM update)</div>
+    <span class="arrow">→</span>
+    <div class="step-box teal">3. useEffect runs</div>
+    <span class="arrow">→</span>
+    <div class="step-box purple">Cleanup (on change / unmount)</div>
+  </div>
+  <div class="dep-pills">
+    <span class="dep-pill amber">No array → every render</span>
+    <span class="dep-pill blue">[ ] → mount only (once)</span>
+    <span class="dep-pill green">[dep] → when dep changes</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('deparray', this)">Dep array</button>
+  <button class="tab" onclick="switchTab('cleanup', this)">Cleanup</button>
+  <button class="tab" onclick="switchTab('patterns', this)">Patterns</button>
+  <button class="tab" onclick="switchTab('pitfalls', this)">Pitfalls</button>
+</div>
+
+<!-- DEP ARRAY -->
+<div id="tab-deparray" class="panel active">
+  <div class="code-block"><span class="hl">useEffect</span>(() =&gt; {
+  <span class="hl4">// side effect here</span>
+  <span class="hl">return</span> () =&gt; { <span class="hl4">/* cleanup */</span> };
+}, <span class="hl3">[dep1, dep2]</span>);</div>
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;flex-wrap:wrap;">
+    <span style="font-size:13px;color:var(--text2)">Shared counter:</span>
+    <span class="big-num" id="shared-count" style="font-size:28px">0</span>
+    <button class="btn" onclick="sharedInc()">+ Increment</button>
+    <button class="btn" onclick="sharedReset()">Reset</button>
+    <span style="font-size:13px;color:var(--text2);margin-left:4px">Renders: <span id="render-num" style="font-family:var(--mono)">1</span></span>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label" style="color:var(--warn-text)">No dependency array</p>
+      <div class="code-block" style="margin-bottom:8px"><span class="hl">useEffect</span>(() =&gt; {
+  doSomething();
+}); <span class="hl4">// no array</span></div>
+      <div class="log" id="log-no-dep">
+        <div class="log-entry effect"><span class="tag effect">effect</span>Ran on render #1</div>
+      </div>
+      <div class="note warn" style="margin-top:8px">Fires after <strong>every</strong> render. Can cause infinite loops if it sets state.</div>
+    </div>
+    <div class="card">
+      <p class="card-label" style="color:var(--info-text)">Empty array [ ]</p>
+      <div class="code-block" style="margin-bottom:8px"><span class="hl">useEffect</span>(() =&gt; {
+  doSomething();
+}, <span class="hl3">[]</span>);</div>
+      <div class="log" id="log-empty-dep">
+        <div class="log-entry effect"><span class="tag effect">effect</span>Ran on mount (once)</div>
+      </div>
+      <div class="note" style="margin-top:8px">Fires <strong>once</strong> after the first render. Perfect for fetching initial data.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-label" style="color:var(--success-text)">[count] — specific dependency</p>
+    <div class="code-block" style="margin-bottom:8px"><span class="hl">useEffect</span>(() =&gt; {
+  console.<span class="hl2">log</span>(<span class="hl3">'count changed to'</span>, count);
+}, <span class="hl3">[count]</span>);</div>
+    <div class="log" id="log-with-dep">
+      <div class="log-entry effect"><span class="tag effect">effect</span>count changed → 0 (mount)</div>
+    </div>
+    <div class="note" style="margin-top:8px">Fires on mount AND whenever <code>count</code> changes. React compares with <code>Object.is()</code>.</div>
+  </div>
+</div>
+
+<!-- CLEANUP -->
+<div id="tab-cleanup" class="panel">
+  <div class="code-block"><span class="hl">useEffect</span>(() =&gt; {
+  <span class="hl">const</span> id = <span class="hl2">setInterval</span>(() =&gt; tick(), <span class="hl3">1000</span>);
+
+  <span class="hl">return</span> () =&gt; {          <span class="hl4">// ← cleanup function</span>
+    <span class="hl2">clearInterval</span>(id);   <span class="hl4">// runs before next effect OR on unmount</span>
+  };
+}, []);</div>
+
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label">Live timer demo</p>
+      <div class="mount-badge">
+        <span class="dot green" id="mount-dot"></span>
+        <span id="mount-label">Component mounted</span>
+      </div>
+      <div class="big-num" id="timer-display" style="margin-bottom:12px">0</div>
+      <div class="btn-row">
+        <button class="btn" onclick="mountComp()">Mount</button>
+        <button class="btn" onclick="unmountComp()">Unmount</button>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-label">Effect + cleanup log</p>
+      <div class="log" id="cleanup-log">
+        <div class="log-entry effect"><span class="tag effect">effect</span>setInterval started (id=1)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-label">Subscription pattern</p>
+    <div class="code-block"><span class="hl">useEffect</span>(() =&gt; {
+  <span class="hl">const</span> handler = (e) =&gt; <span class="hl2">setPos</span>({ x: e.clientX, y: e.clientY });
+  window.<span class="hl2">addEventListener</span>(<span class="hl3">'mousemove'</span>, handler);
+
+  <span class="hl">return</span> () =&gt; {
+    window.<span class="hl2">removeEventListener</span>(<span class="hl3">'mousemove'</span>, handler);
+  };
+}, []);</div>
+    <div class="note">Without cleanup, every re-mount adds another listener. After 10 remounts: 10 listeners firing simultaneously.</div>
+  </div>
+</div>
+
+<!-- PATTERNS -->
+<div id="tab-patterns" class="panel">
+  <div class="card">
+    <p class="card-label">Pattern 1 — data fetching with race guard</p>
+    <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+      <button class="btn" onclick="fetchUser(1)">Load user 1</button>
+      <button class="btn" onclick="fetchUser(2)">Load user 2</button>
+      <button class="btn" onclick="fetchUser(3)">Load user 3</button>
+    </div>
+    <div class="status-box" id="fetch-status">Ready — click a button to fetch</div>
+    <div class="code-block" style="margin-bottom:6px"><span class="hl">useEffect</span>(() =&gt; {
+  <span class="hl">let</span> cancelled = <span class="hl3">false</span>;
+
+  <span class="hl2">fetchUser</span>(userId)
+    .<span class="hl2">then</span>(data =&gt; {
+      <span class="hl">if</span> (!cancelled) <span class="hl2">setUser</span>(data);
+    });
+
+  <span class="hl">return</span> () =&gt; { cancelled = <span class="hl3">true</span>; };
+}, [userId]);</div>
+    <div class="note warn">Always guard stale requests — if userId changes fast, the old fetch might resolve after the new one.</div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label">Pattern 2 — document title sync</p>
+      <input class="input-field" id="title-input" placeholder="Type a page title..." oninput="updateTitle(this.value)" style="margin-bottom:8px">
+      <div class="status-box" id="title-display" style="font-size:12px">document.title = "useEffect Playground"</div>
+      <div class="code-block" style="margin-bottom:0"><span class="hl">useEffect</span>(() =&gt; {
+  document.<span class="hl">title</span> = title;
+}, [title]);</div>
+    </div>
+    <div class="card">
+      <p class="card-label">Pattern 3 — debounce (500ms)</p>
+      <input class="input-field" id="search-input" placeholder="Type to search..." oninput="debounceSearch(this.value)" style="margin-bottom:8px">
+      <div class="status-box" id="search-status" style="font-size:12px">Waiting for input...</div>
+      <div class="code-block" style="margin-bottom:0"><span class="hl">useEffect</span>(() =&gt; {
+  <span class="hl">const</span> t = <span class="hl2">setTimeout</span>(() =&gt;
+    <span class="hl2">searchAPI</span>(query), <span class="hl3">500</span>);
+  <span class="hl">return</span> () =&gt; <span class="hl2">clearTimeout</span>(t);
+}, [query]);</div>
+    </div>
+  </div>
+</div>
+
+<!-- PITFALLS -->
+<div id="tab-pitfalls" class="panel">
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 1 — infinite loop</p>
+    <div class="two-col">
+      <div class="code-block"><span class="hl4">// ❌ Infinite loop!</span>
+<span class="hl">const</span> [data, setData] = <span class="hl">useState</span>([]);
+<span class="hl">useEffect</span>(() =&gt; {
+  <span class="hl2">setData</span>([<span class="hl3">1</span>, <span class="hl3">2</span>, <span class="hl3">3</span>]);
+}); <span class="hl4">// no array!</span></div>
+      <div class="code-block"><span class="hl4">// ✅ Fixed — runs once</span>
+<span class="hl">const</span> [data, setData] = <span class="hl">useState</span>([]);
+<span class="hl">useEffect</span>(() =&gt; {
+  <span class="hl2">setData</span>([<span class="hl3">1</span>, <span class="hl3">2</span>, <span class="hl3">3</span>]);
+}, <span class="hl3">[]</span>); <span class="hl4">// ✓</span></div>
+    </div>
+    <div class="note danger">Missing the dep array: effect sets state → re-render → effect again → forever.</div>
+  </div>
+
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 2 — stale closure</p>
+    <div class="two-col">
+      <div class="code-block"><span class="hl4">// ❌ count always reads 0</span>
+<span class="hl">useEffect</span>(() =&gt; {
+  <span class="hl">const</span> id = <span class="hl2">setInterval</span>(() =&gt; {
+    console.<span class="hl2">log</span>(count); <span class="hl4">// stale!</span>
+  }, <span class="hl3">1000</span>);
+  <span class="hl">return</span> () =&gt; <span class="hl2">clearInterval</span>(id);
+}, <span class="hl3">[]</span>); <span class="hl4">// count=0 frozen here</span></div>
+      <div class="code-block"><span class="hl4">// ✅ Use ref for latest value</span>
+<span class="hl">const</span> countRef = <span class="hl">useRef</span>(count);
+countRef.<span class="hl">current</span> = count;
+
+<span class="hl">useEffect</span>(() =&gt; {
+  <span class="hl">const</span> id = <span class="hl2">setInterval</span>(() =&gt; {
+    console.<span class="hl2">log</span>(countRef.<span class="hl">current</span>);
+  }, <span class="hl3">1000</span>);
+  <span class="hl">return</span> () =&gt; <span class="hl2">clearInterval</span>(id);
+}, <span class="hl3">[]</span>);</div>
+    </div>
+    <div class="note danger">Closures capture the value at the time the effect ran. Omit a dep and its value freezes.</div>
+  </div>
+
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 3 — object/array deps always "changed"</p>
+    <div class="code-block"><span class="hl4">// ❌ options is a new object on every render</span>
+<span class="hl">const</span> options = { includeDeleted: <span class="hl3">false</span> };  <span class="hl4">// recreated each render!</span>
+<span class="hl">useEffect</span>(() =&gt; { <span class="hl2">fetch</span>(userId, options); }, [userId, options]); <span class="hl4">// infinite!</span>
+
+<span class="hl4">// ✅ Define stable reference outside the component</span>
+<span class="hl">const</span> OPTIONS = { includeDeleted: <span class="hl3">false</span> };
+<span class="hl">useEffect</span>(() =&gt; { <span class="hl2">fetch</span>(userId, OPTIONS); }, [userId]); <span class="hl4">// ✓</span></div>
+    <div class="note warn">React compares deps with Object.is(). Two objects with same contents are still different references.</div>
+  </div>
+
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 4 — side effects in render body</p>
+    <div class="two-col">
+      <div class="code-block"><span class="hl4">// ❌ Runs during render!</span>
+<span class="hl">function</span> <span class="hl2">MyComp</span>() {
+  localStorage.<span class="hl2">setItem</span>(<span class="hl3">'k'</span>, val);
+  <span class="hl">return</span> &lt;<span class="hl2">div</span> /&gt;;
+}</div>
+      <div class="code-block"><span class="hl4">// ✅ After render</span>
+<span class="hl">function</span> <span class="hl2">MyComp</span>() {
+  <span class="hl">useEffect</span>(() =&gt; {
+    localStorage.<span class="hl2">setItem</span>(<span class="hl3">'k'</span>, val);
+  }, [val]);
+  <span class="hl">return</span> &lt;<span class="hl2">div</span> /&gt;;
+}</div>
+    </div>
+    <div class="note danger">Render must be a pure function. React 18 Strict Mode double-invokes renders to surface this mistake.</div>
+  </div>
+</div>
+
+<script>
+let sharedCount = 0, renderCount = 1;
+let timerInterval = null, timerVal = 0, isMounted = true, timerId = 1;
+let searchTimer = null;
+
+function switchTab(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+function logEntry(logId, type, msg) {
+  const log = document.getElementById(logId);
+  const entry = document.createElement('div');
+  entry.className = 'log-entry ' + type;
+  entry.innerHTML = `<span class="tag ${type}">${type}</span>${msg}`;
+  log.insertBefore(entry, log.firstChild);
+  if (log.children.length > 12) log.lastChild.remove();
+}
+
+function sharedInc() {
+  sharedCount++; renderCount++;
+  document.getElementById('shared-count').textContent = sharedCount;
+  document.getElementById('render-num').textContent = renderCount;
+  logEntry('log-no-dep', 'effect', `Ran on render #${renderCount}`);
+  logEntry('log-with-dep', 'effect', `count changed → ${sharedCount}`);
+}
+function sharedReset() {
+  sharedCount = 0; renderCount++;
+  document.getElementById('shared-count').textContent = 0;
+  document.getElementById('render-num').textContent = renderCount;
+  logEntry('log-no-dep', 'effect', `Ran on render #${renderCount}`);
+  logEntry('log-with-dep', 'effect', `count changed → 0`);
+}
+
+function mountComp() {
+  if (isMounted) return;
+  isMounted = true; timerVal = 0;
+  document.getElementById('timer-display').textContent = 0;
+  document.getElementById('mount-dot').className = 'dot green';
+  document.getElementById('mount-label').textContent = 'Component mounted';
+  timerInterval = setInterval(() => { timerVal++; document.getElementById('timer-display').textContent = timerVal; }, 1000);
+  timerId++;
+  logEntry('cleanup-log', 'effect', `setInterval started (id=${timerId})`);
+}
+function unmountComp() {
+  if (!isMounted) return;
+  isMounted = false;
+  clearInterval(timerInterval);
+  document.getElementById('mount-dot').className = 'dot gray';
+  document.getElementById('mount-label').textContent = 'Component unmounted';
+  logEntry('cleanup-log', 'cleanup', `clearInterval(id=${timerId}) — cleanup ran`);
+}
+
+const fakeUsers = {
+  1: { name: 'Nag', role: 'Trainer', city: 'Chennai' },
+  2: { name: 'Priya', role: 'Developer', city: 'Bangalore' },
+  3: { name: 'Arjun', role: 'Designer', city: 'Mumbai' }
+};
+function fetchUser(id) {
+  document.getElementById('fetch-status').textContent = `Fetching user ${id}...`;
+  setTimeout(() => {
+    const u = fakeUsers[id];
+    document.getElementById('fetch-status').textContent = `{ name: "${u.name}", role: "${u.role}", city: "${u.city}" }`;
+  }, 600);
+}
+
+function updateTitle(val) {
+  document.title = val || 'useEffect Playground';
+  document.getElementById('title-display').textContent = `document.title = "${val || 'useEffect Playground'}"`;
+}
+
+function debounceSearch(val) {
+  clearTimeout(searchTimer);
+  if (!val) { document.getElementById('search-status').textContent = 'Waiting for input...'; return; }
+  document.getElementById('search-status').textContent = `Debouncing... (fires in 500ms)`;
+  searchTimer = setTimeout(() => {
+    document.getElementById('search-status').textContent = `searchAPI("${val}") fired!`;
+  }, 500);
+}
+
+timerInterval = setInterval(() => {
+  if (isMounted) { timerVal++; document.getElementById('timer-display').textContent = timerVal; }
+}, 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React useState Hook — Interactive Playground</title>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeecea;
+    --text: #1a1a18; --text2: #6b6a64; --text3: #9c9a92;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --blue-bg: #e6f1fb; --blue-text: #0c447c;
+    --green-bg: #eaf3de; --green-text: #27500a;
+    --amber-bg: #faeeda; --amber-text: #633806;
+    --red-bg: #fcebeb; --red-text: #791f1f;
+    --info-bg: #e6f1fb; --info-text: #0c447c;
+    --warn-bg: #faeeda; --warn-text: #633806;
+    --danger-bg: #fcebeb; --danger-text: #791f1f;
+    --success-bg: #eaf3de; --success-text: #27500a;
+    --radius: 8px; --radius-lg: 12px;
+    --mono: 'Courier New', monospace;
+    --sans: system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1c; --bg2: #2a2a27; --bg3: #333330;
+      --text: #e8e6de; --text2: #a8a69e; --text3: #6e6c66;
+      --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
+      --blue-bg: #0c2a44; --blue-text: #85b7eb;
+      --green-bg: #173404; --green-text: #97c459;
+      --amber-bg: #412402; --amber-text: #fac775;
+      --red-bg: #501313; --red-text: #f09595;
+      --info-bg: #0c2a44; --info-text: #85b7eb;
+      --warn-bg: #412402; --warn-text: #fac775;
+      --danger-bg: #501313; --danger-text: #f09595;
+      --success-bg: #173404; --success-text: #97c459;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); padding: 2rem; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 2rem; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab { padding: 6px 14px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: transparent; cursor: pointer; font-size: 13px; color: var(--text2); font-family: var(--sans); transition: all .15s; }
+  .tab.active { background: var(--bg2); color: var(--text); border-color: var(--border2); font-weight: 500; }
+  .panel { display: none; } .panel.active { display: block; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1rem; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  .card-label { font-size: 12px; color: var(--text2); margin: 0 0 10px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; }
+  .big-num { font-size: 40px; font-weight: 500; line-height: 1; margin: 0; }
+  .btn { padding: 7px 16px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: transparent; cursor: pointer; font-size: 13px; color: var(--text); font-family: var(--sans); transition: all .15s; }
+  .btn:hover { background: var(--bg2); }
+  .btn:active { transform: scale(0.97); }
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .code-block { background: var(--bg2); border-radius: var(--radius); padding: 12px 14px; font-family: var(--mono); font-size: 12px; line-height: 1.7; margin-bottom: 1rem; border: 0.5px solid var(--border); overflow-x: auto; }
+  .hl  { color: var(--info-text); }
+  .hl2 { color: var(--warn-text); }
+  .hl3 { color: var(--success-text); }
+  .hl4 { color: var(--text2); }
+  .note { font-size: 12px; color: var(--text2); margin-top: 8px; padding: 8px 12px; background: var(--bg2); border-left: 2px solid var(--info-text); }
+  .note.warn { border-left-color: var(--warn-text); }
+  .note.danger { border-left-color: var(--danger-text); }
+  .render-log { font-size: 12px; font-family: var(--mono); background: var(--bg2); border-radius: var(--radius); padding: 10px 12px; max-height: 130px; overflow-y: auto; }
+  .log-entry { padding: 2px 0; color: var(--text2); }
+  .log-entry.new { color: var(--text); }
+  .state-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-family: var(--mono); background: var(--info-bg); color: var(--info-text); }
+  .section-title { font-size: 13px; font-weight: 500; margin: 0 0 8px; }
+  .input-field { width: 100%; padding: 7px 10px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; }
+  .input-field:focus { outline: none; border-color: var(--text3); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 12px; border: 0.5px solid var(--border); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.green { background: #639922; }
+  .dot.gray { background: var(--text2); }
+</style>
+</head>
+<body>
+<h1>React useState Hook</h1>
+<p class="subtitle">Interactive playground — open in any browser, no setup needed</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('basics', this)">Basics</button>
+  <button class="tab" onclick="switchTab('updater', this)">Updater fn</button>
+  <button class="tab" onclick="switchTab('types', this)">Any data type</button>
+  <button class="tab" onclick="switchTab('lazy', this)">Lazy init</button>
+  <button class="tab" onclick="switchTab('pitfalls', this)">Pitfalls</button>
+</div>
+
+<!-- BASICS -->
+<div id="tab-basics" class="panel active">
+  <div class="code-block"><span class="hl4">// Destructure: [value, setter] from useState(initialValue)</span>
+<span class="hl">const</span> [<span class="hl3">count</span>, <span class="hl2">setCount</span>] = <span class="hl">useState</span>(<span class="hl3">0</span>);</div>
+
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label">State value</p>
+      <p class="big-num" id="count-display">0</p>
+      <div class="btn-row">
+        <button class="btn" onclick="dec()">- Decrement</button>
+        <button class="btn" onclick="inc()">+ Increment</button>
+        <button class="btn" onclick="reset()">Reset</button>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-label">Render log</p>
+      <div class="render-log" id="render-log"></div>
+      <div class="note" style="margin-top:8px">Each state change triggers a re-render. React re-calls your component function.</div>
+    </div>
+  </div>
+
+  <div class="code-block"><span class="hl4">// What React does internally (simplified)</span>
+<span class="hl4">// 1. On first render → stores 0</span>
+<span class="hl4">// 2. setCount(5) → React queues update → re-renders</span>
+<span class="hl4">// 3. On re-render → returns the new value 5</span>
+<span class="hl">function</span> <span class="hl2">Counter</span>() {
+  <span class="hl">const</span> [count, setCount] = <span class="hl">useState</span>(<span class="hl3">0</span>);
+  <span class="hl">return</span> &lt;<span class="hl2">button</span> onClick={() =&gt; <span class="hl2">setCount</span>(count + <span class="hl3">1</span>)}&gt;{count}&lt;/<span class="hl2">button</span>&gt;;
+}</div>
+</div>
+
+<!-- UPDATER FUNCTION -->
+<div id="tab-updater" class="panel">
+  <div class="code-block"><span class="hl4">// Problem: count may be stale in closures</span>
+<span class="hl2">setCount</span>(count + <span class="hl3">1</span>);  <span class="hl4">// ❌ uses captured (possibly stale) value</span>
+
+<span class="hl4">// Solution: pass an updater function — gets the latest value</span>
+<span class="hl2">setCount</span>(<span class="hl">prev</span> =&gt; prev + <span class="hl3">1</span>);  <span class="hl4">// ✅ always current</span></div>
+
+  <p class="section-title">Click "+3 (wrong)" vs "+3 (correct)" to see the difference:</p>
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label" style="color:var(--warn-text)">Direct update (stale)</p>
+      <p class="big-num" id="stale-count">0</p>
+      <div class="btn-row">
+        <button class="btn" onclick="staleAdd()">+3 (wrong)</button>
+        <button class="btn" onclick="document.getElementById('stale-count').textContent=0; staleVal=0">Reset</button>
+      </div>
+      <div class="note warn" style="margin-top:10px">Calls setCount(count+1) three times — all read the same snapshot. Result: only +1.</div>
+    </div>
+    <div class="card">
+      <p class="card-label" style="color:var(--success-text)">Updater fn (correct)</p>
+      <p class="big-num" id="correct-count">0</p>
+      <div class="btn-row">
+        <button class="btn" onclick="correctAdd()">+3 (correct)</button>
+        <button class="btn" onclick="document.getElementById('correct-count').textContent=0; correctVal=0">Reset</button>
+      </div>
+      <div class="note" style="margin-top:10px">Calls setCount(prev => prev+1) three times — each sees the latest. Result: +3.</div>
+    </div>
+  </div>
+  <div class="code-block"><span class="hl4">// ❌ Wrong — all three use the same stale "count"</span>
+<span class="hl2">setCount</span>(count + <span class="hl3">1</span>);
+<span class="hl2">setCount</span>(count + <span class="hl3">1</span>);
+<span class="hl2">setCount</span>(count + <span class="hl3">1</span>);  <span class="hl4">// final: count + 1</span>
+
+<span class="hl4">// ✅ Correct — each updater receives latest prev</span>
+<span class="hl2">setCount</span>(prev =&gt; prev + <span class="hl3">1</span>);
+<span class="hl2">setCount</span>(prev =&gt; prev + <span class="hl3">1</span>);
+<span class="hl2">setCount</span>(prev =&gt; prev + <span class="hl3">1</span>);  <span class="hl4">// final: count + 3 ✓</span></div>
+</div>
+
+<!-- ANY DATA TYPE -->
+<div id="tab-types" class="panel">
+  <p class="section-title">useState can hold any JavaScript value</p>
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label">String state</p>
+      <input class="input-field" id="name-input" placeholder="Type your name..." oninput="updateName(this.value)">
+      <p style="margin:10px 0 0;font-size:14px">Hello, <strong id="name-out">...</strong></p>
+      <div class="code-block" style="margin-top:10px;margin-bottom:0"><span class="hl">const</span> [name, setName] = <span class="hl">useState</span>(<span class="hl3">''</span>);</div>
+    </div>
+    <div class="card">
+      <p class="card-label">Boolean state</p>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span class="pill" id="bool-pill"><span class="dot gray" id="bool-dot"></span><span id="bool-label">false</span></span>
+        <button class="btn" onclick="toggleBool()">Toggle</button>
+      </div>
+      <div class="code-block" style="margin-bottom:0"><span class="hl">const</span> [isOn, setIsOn] = <span class="hl">useState</span>(<span class="hl3">false</span>);<br><span class="hl2">setIsOn</span>(prev =&gt; !prev);</div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label">Array state</p>
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap" id="tags-container"></div>
+      <div style="display:flex;gap:6px">
+        <input class="input-field" id="tag-input" placeholder="Add tag..." style="flex:1">
+        <button class="btn" onclick="addTag()">Add</button>
+      </div>
+      <div class="note" style="margin-top:8px">Always create a NEW array — never mutate the existing one.</div>
+      <div class="code-block" style="margin-top:8px;margin-bottom:0"><span class="hl2">setTags</span>([...tags, newTag]);  <span class="hl4">// ✅ new array</span></div>
+    </div>
+    <div class="card">
+      <p class="card-label">Object state</p>
+      <div id="user-display" style="font-size:13px;margin-bottom:10px;line-height:2"></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn" onclick="updateAge()">Age +1</button>
+        <button class="btn" onclick="updateCity()">Change city</button>
+        <button class="btn" onclick="resetUser()">Reset</button>
+      </div>
+      <div class="code-block" style="margin-top:8px;margin-bottom:0"><span class="hl2">setUser</span>({...user, age: user.age+<span class="hl3">1</span>});</div>
+    </div>
+  </div>
+</div>
+
+<!-- LAZY INIT -->
+<div id="tab-lazy" class="panel">
+  <div class="code-block"><span class="hl4">// ❌ This runs expensiveCalc() on EVERY render</span>
+<span class="hl">const</span> [data, setData] = <span class="hl">useState</span>(<span class="hl2">expensiveCalc</span>());
+
+<span class="hl4">// ✅ Pass a function — React calls it only on the FIRST render</span>
+<span class="hl">const</span> [data, setData] = <span class="hl">useState</span>(() =&gt; <span class="hl2">expensiveCalc</span>());</div>
+
+  <div class="note" style="margin-bottom:1rem">The function form is called <strong>lazy initializer</strong>. React calls it once, then ignores it on re-renders.</div>
+
+  <div class="two-col">
+    <div class="card">
+      <p class="card-label" style="color:var(--danger-text)">Eager (runs every render)</p>
+      <p style="font-size:13px;margin:0 0 10px">Total compute calls: <span style="font-family:var(--mono);color:var(--danger-text)" id="eager-count">0</span></p>
+      <button class="btn" onclick="triggerEager()">Force re-render</button>
+      <div class="note danger" style="margin-top:10px">useState(heavyFn()) — the fn is called before useState even sees the value.</div>
+    </div>
+    <div class="card">
+      <p class="card-label" style="color:var(--success-text)">Lazy (runs once only)</p>
+      <p style="font-size:13px;margin:0 0 10px">Total compute calls: <span style="font-family:var(--mono);color:var(--success-text)" id="lazy-count">1</span></p>
+      <button class="btn" onclick="triggerLazy()">Force re-render</button>
+      <div class="note" style="margin-top:10px">useState(() => heavyFn()) — fn is called only on mount.</div>
+    </div>
+  </div>
+
+  <div class="code-block"><span class="hl4">// Common lazy init use cases</span>
+<span class="hl">const</span> [prefs, setPrefs] = <span class="hl">useState</span>(() =&gt;
+  <span class="hl2">JSON.parse</span>(localStorage.getItem(<span class="hl3">'prefs'</span>) || <span class="hl3">'{}'</span>)
+);
+
+<span class="hl">const</span> [rows, setRows] = <span class="hl">useState</span>(() =&gt;
+  bigDataSet.<span class="hl2">filter</span>(r =&gt; r.active)
+);</div>
+</div>
+
+<!-- PITFALLS -->
+<div id="tab-pitfalls" class="panel">
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 1 — Calling hooks conditionally</p>
+    <div class="code-block"><span class="hl4">// ❌ Hooks must be called in the same order every render</span>
+<span class="hl">if</span> (isLoggedIn) {
+  <span class="hl">const</span> [name, setName] = <span class="hl">useState</span>(<span class="hl3">''</span>);  <span class="hl4">// breaks the rules!</span>
+}
+
+<span class="hl4">// ✅ Declare unconditionally, use conditionally</span>
+<span class="hl">const</span> [name, setName] = <span class="hl">useState</span>(<span class="hl3">''</span>);
+<span class="hl">if</span> (isLoggedIn) { <span class="hl4">/* use name here */</span> }</div>
+  </div>
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 2 — Reading state right after setting it</p>
+    <div class="two-col">
+      <div class="code-block"><span class="hl2">setCount</span>(count + <span class="hl3">1</span>);
+<span class="hl4">// count is still the OLD value here!</span>
+console.<span class="hl2">log</span>(count);  <span class="hl4">// ❌ stale</span></div>
+      <div class="code-block"><span class="hl">const</span> next = count + <span class="hl3">1</span>;
+<span class="hl2">setCount</span>(next);
+console.<span class="hl2">log</span>(next);  <span class="hl4">// ✅ correct</span></div>
+    </div>
+    <div class="note danger">State updates are async — the new value only arrives on the next render.</div>
+  </div>
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 3 — Mutating state directly</p>
+    <div class="code-block"><span class="hl4">// ❌ Mutating — React won't detect the change, no re-render!</span>
+user.name = <span class="hl3">'Alice'</span>;
+<span class="hl2">setUser</span>(user);  <span class="hl4">// same reference → React skips render</span>
+
+<span class="hl4">// ✅ Create a new object/array</span>
+<span class="hl2">setUser</span>({ ...user, name: <span class="hl3">'Alice'</span> });  <span class="hl4">// new reference → triggers render</span></div>
+  </div>
+  <div class="card">
+    <p class="card-label" style="color:var(--danger-text)">Pitfall 4 — Too many separate state variables</p>
+    <div class="code-block"><span class="hl4">// ❌ Too granular</span>
+<span class="hl">const</span> [firstName, setFirstName] = <span class="hl">useState</span>(<span class="hl3">''</span>);
+<span class="hl">const</span> [lastName, setLastName]   = <span class="hl">useState</span>(<span class="hl3">''</span>);
+<span class="hl">const</span> [email, setEmail]         = <span class="hl">useState</span>(<span class="hl3">''</span>);
+
+<span class="hl4">// ✅ Group related state</span>
+<span class="hl">const</span> [form, setForm] = <span class="hl">useState</span>({ firstName: <span class="hl3">''</span>, lastName: <span class="hl3">''</span>, email: <span class="hl3">''</span> });</div>
+  </div>
+</div>
+
+<script>
+let countVal = 0, renderCount = 0, staleVal = 0, correctVal = 0;
+let boolVal = false;
+let tags = ['react', 'hooks'];
+let user = { name: 'Nag', age: 30, city: 'Chennai' };
+let eagerCount = 1, lazyCount = 1;
+
+function switchTab(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+function logRender(val) {
+  renderCount++;
+  const log = document.getElementById('render-log');
+  const prev = log.querySelector('.new');
+  if (prev) prev.classList.remove('new');
+  const entry = document.createElement('div');
+  entry.className = 'log-entry new';
+  entry.textContent = `Render #${renderCount}: count = ${val}`;
+  log.prepend(entry);
+}
+
+function inc() { countVal++; document.getElementById('count-display').textContent = countVal; logRender(countVal); }
+function dec() { countVal--; document.getElementById('count-display').textContent = countVal; logRender(countVal); }
+function reset() { countVal = 0; document.getElementById('count-display').textContent = 0; logRender(0); }
+
+function staleAdd() { staleVal++; document.getElementById('stale-count').textContent = staleVal; }
+function correctAdd() { correctVal += 3; document.getElementById('correct-count').textContent = correctVal; }
+
+function updateName(v) { document.getElementById('name-out').textContent = v || '...'; }
+
+function toggleBool() {
+  boolVal = !boolVal;
+  document.getElementById('bool-label').textContent = String(boolVal);
+  document.getElementById('bool-dot').className = 'dot ' + (boolVal ? 'green' : 'gray');
+}
+
+function renderTags() {
+  document.getElementById('tags-container').innerHTML = tags.map((t, i) =>
+    `<span class="state-tag" style="cursor:pointer" onclick="removeTag(${i})">${t} ×</span>`
+  ).join('');
+}
+function addTag() {
+  const inp = document.getElementById('tag-input');
+  if (inp.value.trim()) { tags = [...tags, inp.value.trim()]; inp.value = ''; renderTags(); }
+}
+function removeTag(i) { tags = tags.filter((_, j) => j !== i); renderTags(); }
+
+function renderUser() {
+  document.getElementById('user-display').innerHTML =
+    `<span style="color:var(--text2);font-family:var(--mono)">name</span>: ${user.name}<br>` +
+    `<span style="color:var(--text2);font-family:var(--mono)">age</span>: ${user.age}<br>` +
+    `<span style="color:var(--text2);font-family:var(--mono)">city</span>: ${user.city}`;
+}
+function updateAge() { user = { ...user, age: user.age + 1 }; renderUser(); }
+const cities = ['Mumbai', 'Bangalore', 'Delhi', 'Hyderabad', 'Pune'];
+let cityIdx = 0;
+function updateCity() { user = { ...user, city: cities[cityIdx++ % cities.length] }; renderUser(); }
+function resetUser() { user = { name: 'Nag', age: 30, city: 'Chennai' }; cityIdx = 0; renderUser(); }
+
+function triggerEager() { eagerCount++; document.getElementById('eager-count').textContent = eagerCount; }
+function triggerLazy() { document.getElementById('lazy-count').textContent = lazyCount; }
+
+logRender(0);
+renderTags();
+renderUser();
+</script>
+</body>
+</html>
