@@ -31,3 +31,23 @@ export const getReviews = async (productId) => {
         throw error;
     }
 }
+
+export const addReview = async (productId, review) => {
+    try {
+        const response = await fetch(`${apiUrl}/${productId}/reviews`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(review),
+        });
+        if (!response.ok) {
+            throw new Error("Failed to add review");
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error adding review:", error);
+        throw error;
+    }
+}

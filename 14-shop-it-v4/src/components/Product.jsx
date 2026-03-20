@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classNames from "classnames";
 import Review from "./Review";
 
 import { useContext } from "react"
 import { CartContext } from "../contexts/CartContext"
+
+import {
+    getReviews
+} from '../api/products'
 
 function Product({ product }) {
 
@@ -11,6 +15,14 @@ function Product({ product }) {
 
     const [currentTab, setCurrentTab] = useState(1)
     const [reviews, setReviews] = useState([])
+
+    useEffect(() => {
+        if (currentTab === 3) {
+            getReviews(product.id)
+                .then(reviews => setReviews(reviews))
+                .catch(error => console.error("Error fetching reviews:", error))
+        }
+    }, [currentTab])
 
     const isInCart = cart.find(item => item.id === product.id) !== undefined
     const cartLineQty = isInCart ? cart.find(item => item.id === product.id).qty : 0
