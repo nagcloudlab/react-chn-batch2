@@ -4,9 +4,11 @@ import Review from "./Review";
 
 import { useContext } from "react"
 import { CartContext } from "../contexts/CartContext"
+import ReviewForm from "./ReviewForm";
 
 import {
-    getReviews
+    getReviews,
+    addReview
 } from '../api/products'
 
 function Product({ product }) {
@@ -26,6 +28,15 @@ function Product({ product }) {
 
     const isInCart = cart.find(item => item.id === product.id) !== undefined
     const cartLineQty = isInCart ? cart.find(item => item.id === product.id).qty : 0
+
+
+    const handleNewReview = (review) => {
+        addReview(product.id, review)
+            .then(() => {
+                setReviews([...reviews, review])
+            })
+            .catch(error => console.error("Error adding review:", error))
+    }
 
     const handleTabChange = (tab) => {
         setCurrentTab(tab)
@@ -48,6 +59,7 @@ function Product({ product }) {
             case 3:
                 return (
                     <div>
+                        <ReviewForm onSubmit={handleNewReview} />
                         {reviews.map(review => {
                             return (
                                 <div key={review.id} className="mt-2">
