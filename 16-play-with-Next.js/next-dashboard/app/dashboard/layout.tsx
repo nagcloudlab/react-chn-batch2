@@ -28,6 +28,11 @@ export default function DashboardLayout({
                             Users
                         </Link>
                     </li>
+                    <li className="nav-item">
+                        <Link className="nav-link text-white" href="/dashboard/courses/new">
+                            Add Course
+                        </Link>
+                    </li>
                 </ul>
 
             </div>
